@@ -1,0 +1,17 @@
+# any hidden (dot) folder, anywhere
+.*/
+
+# build output
+lib/
+wordzel
+*.lps
+*.compiled
+*.o
+*.ppu
+
+lcltouch/repro/touchrepro
+
+# release packages
+dist/
+wordzel.exe
+

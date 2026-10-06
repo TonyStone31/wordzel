@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="Wordzel"/>
+      <Scaled Value="True"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
+      <Icon Value="0"/>
+      <Resources Count="16">
+        <Resource_0 FileName="sounds/back.wav" Type="RCDATA" ResourceName="SND_BACK"/>
+        <Resource_1 FileName="sounds/enter.wav" Type="RCDATA" ResourceName="SND_ENTER"/>
+        <Resource_2 FileName="sounds/key.wav" Type="RCDATA" ResourceName="SND_KEY"/>
+        <Resource_3 FileName="sounds/tick.wav" Type="RCDATA" ResourceName="SND_TICK"/>
+        <Resource_4 FileName="sounds/flush.wav" Type="RCDATA" ResourceName="SND_FLUSH"/>
+        <Resource_5 FileName="sounds/fart1.wav" Type="RCDATA" ResourceName="SND_FART1"/>
+        <Resource_6 FileName="sounds/fart2.wav" Type="RCDATA" ResourceName="SND_FART2"/>
+        <Resource_7 FileName="sounds/fart3.wav" Type="RCDATA" ResourceName="SND_FART3"/>
+        <Resource_8 FileName="sounds/win1.wav" Type="RCDATA" ResourceName="SND_WIN1"/>
+        <Resource_9 FileName="sounds/win2.wav" Type="RCDATA" ResourceName="SND_WIN2"/>
+        <Resource_10 FileName="sounds/win3.wav" Type="RCDATA" ResourceName="SND_WIN3"/>
+        <Resource_11 FileName="sounds/lose1.wav" Type="RCDATA" ResourceName="SND_LOSE1"/>
+        <Resource_12 FileName="sounds/lose2.wav" Type="RCDATA" ResourceName="SND_LOSE2"/>
+        <Resource_13 FileName="sounds/lose3.wav" Type="RCDATA" ResourceName="SND_LOSE3"/>
+        <Resource_14 FileName="sounds/poop1.wav" Type="RCDATA" ResourceName="SND_POOP1"/>
+        <Resource_15 FileName="sounds/poop2.wav" Type="RCDATA" ResourceName="SND_POOP2"/>
+      </Resources>
+    </General>
+    <MacroValues Count="1">
+      <Macro1 Name="LCLWidgetType" Value="gtk3"/>
+    </MacroValues>
+    <BuildModes>
+      <Item Name="Default" Default="True"/>
+      <Item Name="Debug">
+        <MacroValues Count="1">
+          <Macro1 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="wordzel"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+      <SharedMatrixOptions Count="1">
+        <Item1 ID="938799625452" Modes="Debug,Default" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+      </SharedMatrixOptions>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+    </RequiredPackages>
+    <Units>
+      <Unit>
+        <Filename Value="wordzel.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitfrmmain.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitwordlist.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitwordpicker.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitdictionary.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unittouch.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="wordzel"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+      </Debugging>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions>
+      <Item>
+        <Name Value="EAbort"/>
+      </Item>
+      <Item>
+        <Name Value="ECodetoolError"/>
+      </Item>
+      <Item>
+        <Name Value="EFOpenError"/>
+      </Item>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

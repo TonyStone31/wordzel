@@ -1,0 +1,28 @@
+Alternative, minimal fix for touchscreen taps being lost under LCL-gtk3.
+
+Stop putting GDK_TOUCH_MASK in GDK_DEFAULT_EVENTS_MASK, so LCL widgets no
+longer ask for touch events and X/GDK go back to emulating the mouse for the
+first finger. Smaller than 0001, but it relies on nothing else in the window
+selecting touch events: if a GTK parent (e.g. a client-side-decorated
+GtkWindow with gestures) selects them, pointer emulation can still be
+suppressed. See ../ANALYSIS.md.
+
+Against Lazarus main b9cfd22ae9 (2026-09-11). Applies cleanly and compiles
+with FPC 3.3.1 with no errors (gtk3procs.pas, and gtk3widgets.pas built
+against it). Not tested on touch hardware.
+
+--- a/lcl/interfaces/gtk3/gtk3procs.pas	2026-09-11 19:15:50.797367025 -0400
++++ b/lcl/interfaces/gtk3/gtk3procs.pas	2026-09-11 19:15:50.799492670 -0400
+@@ -117,8 +117,10 @@
+     GDK_PROXIMITY_IN_MASK, {262144}
+     GDK_PROXIMITY_OUT_MASK, {524288}
+     GDK_SUBSTRUCTURE_MASK, {1048576}
+-    GDK_SCROLL_MASK, {2097152}
+-    GDK_TOUCH_MASK {4194304}
++    GDK_SCROLL_MASK {2097152}
++    // GDK_TOUCH_MASK {4194304} - not selected: asking for touch events stops
++    // X/GDK emulating the mouse for touches, and LCL does not handle
++    // GDK_TOUCH_*, so every tap on a touchscreen was lost.
+  // GDK_SMOOTH_SCROLL_MASK {8388608} //there is a bug in GTK3, see https://stackoverflow.com/questions/11775161/gtk3-get-mouse-scroll-direction
+   ];
+ 

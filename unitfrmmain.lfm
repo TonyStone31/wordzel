@@ -1,0 +1,107 @@
+object Form1: TForm1
+  Left = 400
+  Height = 780
+  Top = 100
+  Width = 620
+  Caption = 'Wordzel'
+  ClientHeight = 780
+  ClientWidth = 620
+  DesignTimePPI = 96
+  KeyPreview = True
+  Position = poScreenCenter
+  LCLVersion = '4.99.0.0'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  OnResize = FormResize
+  object PanelHeader: TPanel
+    Left = 0
+    Height = 76
+    Top = 0
+    Width = 620
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+    object PaintBoxBar: TPaintBox
+      Left = 0
+      Height = 52
+      Top = 0
+      Width = 620
+      Align = alTop
+      OnMouseDown = PaintBoxBarMouseDown
+      OnMouseLeave = PaintBoxBarMouseLeave
+      OnMouseMove = PaintBoxBarMouseMove
+      OnMouseUp = PaintBoxBarMouseUp
+      OnPaint = PaintBoxBarPaint
+    end
+    object LabelStatus: TLabel
+      Left = 0
+      Height = 24
+      Top = 52
+      Width = 620
+      Align = alClient
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'Welcome!'
+      Font.Height = -14
+      Layout = tlCenter
+      ParentColor = False
+      ParentFont = False
+      Transparent = True
+    end
+  end
+  object PanelKeys: TPanel
+    Left = 0
+    Height = 212
+    Top = 568
+    Width = 620
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 2
+    object PaintBoxKeys: TPaintBox
+      Left = 0
+      Height = 212
+      Top = 0
+      Width = 620
+      Align = alClient
+      OnMouseDown = PaintBoxKeysMouseDown
+      OnMouseLeave = PaintBoxKeysMouseLeave
+      OnMouseMove = PaintBoxKeysMouseMove
+      OnMouseUp = PaintBoxKeysMouseUp
+      OnPaint = PaintBoxKeysPaint
+    end
+  end
+  object PaintBoxBoard: TPaintBox
+    Left = 0
+    Height = 492
+    Top = 76
+    Width = 620
+    Align = alClient
+    OnMouseDown = PaintBoxBoardMouseDown
+    OnMouseMove = PaintBoxBoardMouseMove
+    OnMouseUp = PaintBoxBoardMouseUp
+    OnPaint = PaintBoxBoardPaint
+  end
+  object TimerAnim: TTimer
+    Enabled = False
+    Interval = 16
+    OnTimer = TimerAnimTimer
+    Left = 88
+    Top = 8
+  end
+  object TimerClock: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerClockTimer
+    Left = 128
+    Top = 8
+  end
+  object TimerHold: TTimer
+    Enabled = False
+    Interval = 550
+    OnTimer = TimerHoldTimer
+    Left = 168
+    Top = 8
+  end
+end

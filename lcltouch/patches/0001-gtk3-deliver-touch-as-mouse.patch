@@ -1,0 +1,109 @@
+Proposed fix: touchscreen taps are lost in LCL-gtk3 applications.
+
+GDK_DEFAULT_EVENTS_MASK selects GDK_TOUCH_MASK on every LCL widget, which
+stops X/GDK from emulating the mouse for touches, but WidgetEvent has no
+GDK_TOUCH_* handling - so taps never become LCL mouse messages.
+
+This adds GDK_TOUCH_BEGIN/UPDATE/END/CANCEL arms to TGtk3Widget.WidgetEvent.
+For the pointer-emulating touch sequence (the first finger) they build the
+equivalent GDK_BUTTON_PRESS / GDK_MOTION_NOTIFY / GDK_BUTTON_RELEASE event
+and feed it back through WidgetEvent, so all the existing mouse handling
+(focus, TButtonControl exceptions, OffsetMousePos, capture, LM_CONTEXTMENU)
+applies unchanged. See ../ANALYSIS.md.
+
+Against Lazarus main b9cfd22ae9 (2026-09-11). Applies cleanly and compiles
+with FPC 3.3.1 against that tree with no errors - including every unit that
+depends on gtk3widgets, since the new method changes the unit's interface
+CRC. Not yet tested on touch hardware.
+
+--- a/lcl/interfaces/gtk3/gtk3widgets.pas	2026-09-11 19:15:50.796299002 -0400
++++ b/lcl/interfaces/gtk3/gtk3widgets.pas	2026-09-11 19:15:50.798075378 -0400
+@@ -101,6 +101,7 @@
+     class function MoveTabFocus(aWidget: PGtkWidget;
+       aDirection: TGtkDirectionType; aData: gPointer): gBoolean; cdecl; static;
+     class function WidgetEvent(widget: PGtkWidget; event: PGdkEvent; data: GPointer): gboolean; cdecl; static; {main event filter of widget}
++    class function TouchAsMouse(widget: PGtkWidget; event: PGdkEvent; data: GPointer): gboolean; static; {touchscreen -> mouse, for WidgetEvent}
+     class procedure GrabNotify({%H-}widget: PGtkWidget; was_grabbed: gboolean; {%H-}data: GPointer); cdecl; static;
+     class procedure DestroyWidgetEvent({%H-}w: PGtkWidget;{%H-}data:gpointer); cdecl; static;
+   strict private
+@@ -1581,6 +1582,8 @@
+ 
+       Result := TGtk3Widget(Data).GtkEventMouse(Widget , Event);
+     end;
++  GDK_TOUCH_BEGIN, GDK_TOUCH_UPDATE, GDK_TOUCH_END, GDK_TOUCH_CANCEL:
++    Result := TouchAsMouse(Widget, Event, Data);
+   GDK_KEY_PRESS:
+     begin
+       if (wtSpinEdit in TGtk3Widget(Data).WidgetType) and
+@@ -1733,6 +1736,71 @@
+   end;
+ end;
+ 
++{ Touchscreens.
++
++  GDK_DEFAULT_EVENTS_MASK selects GDK_TOUCH_MASK, and asking for touch events
++  is exactly what stops X/GDK from emulating the mouse for touches - so unless
++  LCL does the emulating itself, taps on a touchscreen are simply lost.
++
++  Only the sequence GDK marks as emulating the pointer (the first finger down)
++  is used; further fingers are ignored, as they are by pointer emulation. The
++  touch is turned into the matching button or motion event and fed back
++  through WidgetEvent, so focus handling, the TButtonControl exceptions,
++  OffsetMousePos, capture and LM_CONTEXTMENU all behave exactly as for a
++  mouse. }
++class function TGtk3Widget.TouchAsMouse(widget: PGtkWidget; event: PGdkEvent;
++  data: GPointer): gboolean;
++var
++  Emulated: TGdkEvent;
++begin
++  Result := gtk_false;
++  if not event^.touch.emulating_pointer then
++    exit;
++
++  FillChar(Emulated{%H-}, SizeOf(Emulated), 0);
++  if event^.type_ = GDK_TOUCH_UPDATE then
++  begin
++    Emulated.motion.type_ := GDK_MOTION_NOTIFY;
++    Emulated.motion.window := event^.touch.window;
++    Emulated.motion.send_event := event^.touch.send_event;
++    Emulated.motion.time := event^.touch.time;
++    Emulated.motion.x := event^.touch.x;
++    Emulated.motion.y := event^.touch.y;
++    // A finger being dragged is a mouse with the left button held down.
++    Emulated.motion.state := event^.touch.state + [GDK_BUTTON1_MASK];
++    Emulated.motion.device := event^.touch.device;
++    Emulated.motion.x_root := event^.touch.x_root;
++    Emulated.motion.y_root := event^.touch.y_root;
++  end
++  else
++  begin
++    if event^.type_ = GDK_TOUCH_BEGIN then
++      Emulated.button.type_ := GDK_BUTTON_PRESS
++    else
++      Emulated.button.type_ := GDK_BUTTON_RELEASE;   // GDK_TOUCH_END, GDK_TOUCH_CANCEL
++    Emulated.button.window := event^.touch.window;
++    Emulated.button.send_event := event^.touch.send_event;
++    Emulated.button.time := event^.touch.time;
++    Emulated.button.x := event^.touch.x;
++    Emulated.button.y := event^.touch.y;
++    // As for a real release, the state still has the button that is going up.
++    if event^.type_ = GDK_TOUCH_BEGIN then
++      Emulated.button.state := event^.touch.state
++    else
++      Emulated.button.state := event^.touch.state + [GDK_BUTTON1_MASK];
++    Emulated.button.button := GTK3_LEFT_BUTTON;
++    Emulated.button.device := event^.touch.device;
++    Emulated.button.x_root := event^.touch.x_root;
++    Emulated.button.y_root := event^.touch.y_root;
++  end;
++
++  Result := WidgetEvent(widget, @Emulated, data);
++
++  // The mouse path marks an event once it has been dealt with, so that the
++  // parents it bubbles up through leave it alone. Do the same for the touch.
++  event^.touch.send_event := Emulated.any.send_event;
++end;
++
+ class function TGtk3Widget.DrawWidget(AWidget: PGtkWidget; AContext: Pcairo_t; Data: gpointer): gboolean; cdecl;
+ var
+   ARect: TGdkRectangle;

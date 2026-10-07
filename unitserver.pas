@@ -36,7 +36,7 @@ type
 implementation
 
 uses
-  SysUtils, fphttpserver, httpdefs, md5, unitscores;
+  SysUtils, ssockets, fphttpserver, httpdefs, md5, unitscores;
 
 const
   RT_RCDATA = PChar(10);
@@ -276,10 +276,21 @@ begin
 end;
 
 destructor TWordzelServer.Destroy;
+var
+  Poke: TInetSocket;
 begin
   if FThread <> nil then
   begin
     TServerThread(FThread).FServer.Active := False;
+    { The server thread sits blocked in accept() and only rechecks Active
+      after a connection comes in - so hand it one, or closing the window
+      waits for the next visitor. }
+    try
+      Poke := TInetSocket.Create('127.0.0.1', FPort);
+      Poke.Free;
+    except
+      // never bound (port was taken) - nothing to wake
+    end;
     FThread.WaitFor;
     FThread.Free;
   end;

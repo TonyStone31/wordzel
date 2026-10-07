@@ -1279,7 +1279,11 @@ begin
 
   PaintBoxKeys.Hint := Want;
   if Want = '' then
-    Application.HideHint;   // drop the tooltip the moment Shift or the mouse leaves
+    Application.HideHint   // drop the tooltip the moment Shift or the mouse leaves
+  else
+    // Windows only pops a hint when the mouse newly enters a control, and
+    // the mouse is already sitting on the key - so show it by hand.
+    Application.ActivateHint(Mouse.CursorPos);
 end;
 
 procedure TForm1.DrawKey(C: TCanvas; Index: Integer);

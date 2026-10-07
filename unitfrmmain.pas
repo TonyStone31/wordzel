@@ -2460,8 +2460,9 @@ begin
       VK_M: RunAction(ACT_CUSTOM_WORD);
       VK_L: RunAction(ACT_LOOKUP_ANY);
       VK_D:
-        // Hidden developer info: Ctrl+Shift+D
-        if ssShift in Shift then
+        // Hidden developer info: Ctrl+Shift+D, only while the debug
+        // switch is armed (Shift-click BACK within 30s of startup).
+        if (ssShift in Shift) and FDebugMode then
           ShowPoolInfo
         else
           Exit;

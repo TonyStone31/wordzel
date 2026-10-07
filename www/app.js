@@ -6,16 +6,21 @@
 const $ = id => document.getElementById(id);
 
 // ---- word machinery, mirroring unitwordpicker ----------------------------
+// /words.js only loads once the family cookie is set, so before joining
+// none of the WZ_* globals exist - nothing here may touch them at load time.
 
-const GUESSES = new Set(WZ_WORDS);
-WZ_HOUSE.forEach(w => GUESSES.add(w));
-const POTTY = new Set(WZ_POTTY);
-
-const REJECT_FRACTION = 0.5;
+let GUESSES = null, POTTY = null;
 const POOLS = {};            // len -> eligible secrets, most common first
-for (let len = 3; len <= 9; len++) {
-  const all = WZ_COMMON.filter(w => w.length === len);
-  POOLS[len] = all.slice(0, Math.max(1, all.length - Math.trunc(all.length * REJECT_FRACTION)));
+const REJECT_FRACTION = 0.5;
+
+function initWords() {
+  GUESSES = new Set(WZ_WORDS);
+  WZ_HOUSE.forEach(w => GUESSES.add(w));
+  POTTY = new Set(WZ_POTTY);
+  for (let len = 3; len <= 9; len++) {
+    const all = WZ_COMMON.filter(w => w.length === len);
+    POOLS[len] = all.slice(0, Math.max(1, all.length - Math.trunc(all.length * REJECT_FRACTION)));
+  }
 }
 const LEVEL_NAMES = { 3: 'Easy', 4: 'Medium', 5: 'Normal', 6: 'Hard',
                       7: 'Expert', 8: 'Master', 9: 'Insane' };
@@ -61,8 +66,14 @@ function showPane(which) {
 }
 
 async function boot() {
-  // words.js only loads once the family cookie is set, so getting here
-  // at all means we are in; but the page may be a fresh visitor.
+  // a fresh visitor has no family cookie, so /words.js was a 401 and the
+  // WZ_* globals do not exist - the passphrase door comes first
+  if (typeof WZ_WORDS === 'undefined') {
+    showPane('join');
+    $('joinPass').focus();
+    return;
+  }
+  initWords();
   const r = await api('/api/players');
   if (!r.ok) { showPane('join'); return; }
   const who = document.cookie.match(/(?:^|; )who=([A-Za-z0-9]+)/);

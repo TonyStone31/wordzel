@@ -23,10 +23,14 @@ type
   private
     FThread: TThread;
     FPort: Word;
+    function GetError: string;
   public
     constructor Create(APort: Word; const APassphrase: string);
     destructor Destroy; override;
     property Port: Word read FPort;
+    { '' while serving; the reason otherwise (port taken, no permission).
+      Binding fails within moments, so check shortly after Create. }
+    property Error: string read GetError;
   end;
 
 implementation
@@ -42,6 +46,7 @@ type
   private
     FServer: TFPHTTPServer;
     FFamToken: string;
+    FError: string;
     procedure HandleRequest(Sender: TObject;
       var ARequest: TFPHTTPConnectionRequest;
       var AResponse: TFPHTTPConnectionResponse);
@@ -76,7 +81,8 @@ begin
   try
     FServer.Active := True;   // blocks until Active := False
   except
-    // port taken, permissions - the menu shows the server as off again
+    on E: Exception do
+      FError := E.Message;    // port taken, permissions - the GUI reports it
   end;
 end;
 
@@ -110,6 +116,7 @@ begin
     Exit;
   end;
   AResponse.ContentType := AMime;
+  AResponse.SetCustomHeader('Cache-Control', 'no-cache');
   AResponse.ContentStream := R;
   AResponse.FreeContentStream := True;
   Result := True;
@@ -173,6 +180,21 @@ begin
     Exit;
   end;
 
+  { The word list is a script, so its "not yet" answer has to be one too,
+    or the browser chokes on JSON where JavaScript was promised. }
+  if Path = '/words.js' then
+  begin
+    if FamOK then
+      SendResource(AResponse, 'WWW_WORDS', 'application/javascript; charset=utf-8')
+    else
+    begin
+      AResponse.Code := 401;
+      AResponse.ContentType := 'application/javascript; charset=utf-8';
+      AResponse.Content := '// join first';
+    end;
+    Exit;
+  end;
+
   if not FamOK then
   begin
     SendError(AResponse, 401, 'join first');
@@ -180,12 +202,6 @@ begin
   end;
 
   { ---- family-only from here down ---- }
-
-  if Path = '/words.js' then
-  begin
-    SendResource(AResponse, 'WWW_WORDS', 'application/javascript; charset=utf-8');
-    Exit;
-  end;
 
   if Copy(Path, 1, 8) = '/sounds/' then
   begin
@@ -247,6 +263,11 @@ begin
 end;
 
 { ------------------------------------------------------------------ }
+
+function TWordzelServer.GetError: string;
+begin
+  Result := TServerThread(FThread).FError;
+end;
 
 constructor TWordzelServer.Create(APort: Word; const APassphrase: string);
 begin

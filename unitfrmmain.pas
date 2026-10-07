@@ -335,6 +335,7 @@ type
     procedure ShowLeaderboardCard;
     procedure LoadFamilyConfig;
     procedure SaveFamilyConfig;
+    function StartFamilyServer: Boolean;
     procedure ToggleFamilyServer;
     procedure FamilyAfterGame(AWon: Boolean);
     procedure ShowPoolInfo;
@@ -2302,7 +2303,7 @@ begin
           // the running server keeps the old phrase until restarted
           FreeAndNil(FServer);
           if FFamilyPass <> '' then
-            FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+            StartFamilyServer;
         end;
         SaveFamilyConfig;
         ShowStatus('Family passphrase set', TONE_GOOD);
@@ -3658,7 +3659,7 @@ begin
     FFamilyPass := Ini.ReadString('family', 'passphrase', '');
     FFamilyPort := Ini.ReadInteger('family', 'port', 8080);
     if Ini.ReadBool('family', 'server', False) and (FFamilyPass <> '') then
-      FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+      StartFamilyServer;
   finally
     Ini.Free;
   end;
@@ -3679,6 +3680,22 @@ begin
   end;
 end;
 
+{ True when the server is up and actually bound to its port. Binding fails
+  within moments (port taken, no permission), so a short wait is enough to
+  tell a running server from a lying one. }
+function TForm1.StartFamilyServer: Boolean;
+begin
+  FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+  Sleep(400);
+  Result := FServer.Error = '';
+  if not Result then
+  begin
+    ShowStatus(Format('Port %d did not work: %s', [FFamilyPort, FServer.Error]),
+      TONE_WARN);
+    FreeAndNil(FServer);
+  end;
+end;
+
 procedure TForm1.ToggleFamilyServer;
 begin
   if FServer <> nil then
@@ -3691,11 +3708,8 @@ begin
     ShowStatus('Set a family passphrase first (☰ menu)', TONE_WARN);
     Exit;
   end
-  else
-  begin
-    FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+  else if StartFamilyServer then
     ShowStatus(Format('Family server on port %d', [FFamilyPort]), TONE_GOOD);
-  end;
   SaveFamilyConfig;
 end;
 

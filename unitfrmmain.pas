@@ -135,6 +135,7 @@ type
     FLoseReason: TLoseReason;
     FWins, FTotalGames: Integer;
     FDebugMode: Boolean;
+    FBootT: QWord;
 
     // Board geometry, recomputed from the paint box on every repaint
     FTileSize, FTileGap, FBoardX, FBoardY, FBoardW, FBoardH: Integer;
@@ -686,7 +687,10 @@ begin
   DoubleBuffered := True;
 
   KeyPreview := True;
-  FDebugMode := True;          // gates the Shift-hover-BACK answer peek
+  { The Shift-hover-BACK answer peek starts disarmed, so honest play is not
+    tempted. Shift-clicking BACK within the first 30 seconds arms it. }
+  FDebugMode := False;
+  FBootT := GetTickCount64;
 
   // An empty Hint shows nothing, so this can stay on and be filled in on demand.
   PaintBoxKeys.ShowHint := True;
@@ -1427,11 +1431,24 @@ begin
 
   // Only fire if press and release landed on the same key.
   if (Hit >= 0) and (Hit = FPressedKey) then
-    case FKeys[Hit].Kind of
-      kkLetter: TypeLetter(FKeys[Hit].Ch);
-      kkEnter:  PressEnter;
-      kkBack:   PressBack;
-    end;
+  begin
+    // Shift-click on BACK is the debug switch, never a delete: within the
+    // first 30 seconds it arms the answer peek, after that it does nothing.
+    if (FKeys[Hit].Kind = kkBack) and (ssShift in Shift) then
+    begin
+      if not FDebugMode and (GetTickCount64 - FBootT <= 30000) then
+      begin
+        FDebugMode := True;
+        ShowStatus('🤫');
+      end;
+    end
+    else
+      case FKeys[Hit].Kind of
+        kkLetter: TypeLetter(FKeys[Hit].Ch);
+        kkEnter:  PressEnter;
+        kkBack:   PressBack;
+      end;
+  end;
   FPressedKey := -1;
   PaintBoxKeys.Invalidate;
 end;

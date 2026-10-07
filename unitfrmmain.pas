@@ -19,7 +19,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, LCLType,
-  unitdictionary, unittouch;
+  unitdictionary, unittouch, unitserver;
 
 type
   TTileState = (tsEmpty, tsFilled, tsCorrect, tsPresent, tsAbsent);
@@ -28,7 +28,7 @@ type
   TLoseReason = (lrOutOfTries, lrGaveUp, lrTimeUp);
   TKeyKind = (kkLetter, kkEnter, kkBack);
   TTimerMode = (tmOff, tmLevel, tmFixed);
-  TPromptKind = (prWord, prTime);
+  TPromptKind = (prWord, prTime, prText, prDigits);
   TParticleKind = (ptFly, ptBounce, ptVortex, ptText);
 
   TTileInfo = record
@@ -136,6 +136,13 @@ type
     FWins, FTotalGames: Integer;
     FDebugMode: Boolean;
     FBootT: QWord;
+
+    // Family game server
+    FPlayerName: string;
+    FFamilyPass: string;
+    FFamilyPort: Integer;
+    FServer: TWordzelServer;
+    FShowBoardAt: QWord;
 
     // Board geometry, recomputed from the paint box on every repaint
     FTileSize, FTileGap, FBoardX, FBoardY, FBoardW, FBoardH: Integer;
@@ -325,6 +332,11 @@ type
     procedure ShowInfoCard(const ATitle: string; const AInfo: TDefResult);
     procedure ShowHelpCard;
     procedure ShowAboutCard;
+    procedure ShowLeaderboardCard;
+    procedure LoadFamilyConfig;
+    procedure SaveFamilyConfig;
+    procedure ToggleFamilyServer;
+    procedure FamilyAfterGame(AWon: Boolean);
     procedure ShowPoolInfo;
     function WordInRow(Row: Integer): string;
     procedure StartLookup(const AWord: string);
@@ -345,7 +357,7 @@ var
 implementation
 
 uses
-  LCLIntf, Math, unitwordpicker
+  LCLIntf, Math, IniFiles, unitscores, unitwordpicker
   {$IFDEF WINDOWS}, MMSystem{$ELSE}, Process{$ENDIF};
 
 {$R *.lfm}
@@ -402,6 +414,11 @@ const
   ACT_CLICKS = 11;
   ACT_QUIT = 12;
   ACT_ABOUT = 13;
+  ACT_FAMILY_NAME = 14;
+  ACT_FAMILY_PASS = 15;
+  ACT_FAMILY_PORT = 16;
+  ACT_FAMILY_SERVER = 17;
+  ACT_FAMILY_BOARD = 18;
   ACT_LEVEL = 100;             // + word length
   ACT_TIMER_SECS = 1000;       // + seconds
   MENU_LEVEL = 200;            // top-bar dropdowns
@@ -725,6 +742,8 @@ begin
     hold the window back. }
   FSoundDir := ExtractFilePath(Application.ExeName) + 'sounds' + PathDelim;
 
+  LoadFamilyConfig;
+
   // Touch is hooked on the window once it exists - see FormFirstShow.
   // Forcing the handle here instead (HandleNeeded) makes gtk3 open the
   // window at 0.8x its designed size.
@@ -759,6 +778,8 @@ begin
   CancelLookup;    // it finishes into its own fields and frees itself
   ReapSounds(True);
   FreeAndNil(FSoundProcs);
+  FreeAndNil(FServer);
+  ScoresDone;
   { The unpacked sounds stay in the temp folder on purpose - the next run
     reuses them, and the OS owns cleaning its temp space. }
 end;
@@ -1920,6 +1941,17 @@ begin
         AddMenuItem('Sound effects', ACT_SOUND, True, FSoundOn);
         AddMenuItem('Key click sounds', ACT_CLICKS, FSoundOn, FClicksOn);
         AddMenuSep;
+        AddMenuSep;
+        if FPlayerName <> '' then
+          AddMenuItem(Format('Player · %s...', [FPlayerName]), ACT_FAMILY_NAME)
+        else
+          AddMenuItem('Player name...', ACT_FAMILY_NAME);
+        AddMenuItem('Family passphrase...', ACT_FAMILY_PASS);
+        AddMenuItem(Format('Server port · %d...', [FFamilyPort]),
+          ACT_FAMILY_PORT, FServer = nil);
+        AddMenuItem('Run family server', ACT_FAMILY_SERVER, True, FServer <> nil);
+        AddMenuItem('Leaderboard', ACT_FAMILY_BOARD);
+        AddMenuSep;
         AddMenuItem('How to play', ACT_HELP, True, False, 'F1');
         AddMenuItem('About', ACT_ABOUT);
         AddMenuItem('Quit', ACT_QUIT);
@@ -2119,6 +2151,19 @@ begin
       ShowHelpCard;
     ACT_ABOUT:
       ShowAboutCard;
+    ACT_FAMILY_NAME:
+      OpenPrompt(prText, ACT_FAMILY_NAME, 'Player name',
+        'Letters and numbers, up to 12', FPlayerName, 12);
+    ACT_FAMILY_PASS:
+      OpenPrompt(prText, ACT_FAMILY_PASS, 'Family passphrase',
+        'Anyone with this phrase can join the web game', FFamilyPass, 40);
+    ACT_FAMILY_PORT:
+      OpenPrompt(prDigits, ACT_FAMILY_PORT, 'Server port',
+        'Usually 8080', IntToStr(FFamilyPort), 5);
+    ACT_FAMILY_SERVER:
+      ToggleFamilyServer;
+    ACT_FAMILY_BOARD:
+      ShowLeaderboardCard;
     ACT_SOUND:
       FSoundOn := not FSoundOn;
     ACT_CLICKS:
@@ -2169,6 +2214,8 @@ begin
   case FPromptKind of
     prWord: if not (Ch in ['A'..'Z']) then Exit;
     prTime: if not (Ch in ['0'..'9', ':']) then Exit;
+    prText: if (Ch < #32) or (Ch > #126) then Exit;
+    prDigits: if not (Ch in ['0'..'9']) then Exit;
   end;
   if Length(FPromptText) >= FPromptMax then
   begin
@@ -2229,6 +2276,49 @@ begin
         PlayClick('enter.wav');
         ClosePrompt;
         SetTimerMode(tmFixed, Secs);
+      end;
+    ACT_FAMILY_NAME:
+      begin
+        FPlayerName := SanitizeName(S);
+        SaveFamilyConfig;
+        ClosePrompt;
+        if FPlayerName <> '' then
+          ShowStatus('Playing as ' + FPlayerName, TONE_GOOD)
+        else
+          ShowStatus('No player name - games will not be scored');
+      end;
+    ACT_FAMILY_PASS:
+      begin
+        if (S <> '') and (Length(S) < 4) then
+        begin
+          FPromptError := 'At least 4 characters';
+          PaintBoxBoard.Invalidate;
+          Exit;
+        end;
+        FFamilyPass := S;
+        ClosePrompt;
+        if FServer <> nil then
+        begin
+          // the running server keeps the old phrase until restarted
+          FreeAndNil(FServer);
+          if FFamilyPass <> '' then
+            FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+        end;
+        SaveFamilyConfig;
+        ShowStatus('Family passphrase set', TONE_GOOD);
+      end;
+    ACT_FAMILY_PORT:
+      begin
+        Secs := StrToIntDef(S, 0);
+        if (Secs < 1024) or (Secs > 65535) then
+        begin
+          FPromptError := 'A number from 1024 to 65535';
+          PaintBoxBoard.Invalidate;
+          Exit;
+        end;
+        FFamilyPort := Secs;
+        SaveFamilyConfig;
+        ClosePrompt;
       end;
   else
     ClosePrompt;
@@ -2405,6 +2495,19 @@ begin
   if FPromptOpen and (FPromptKind = prTime) and (Ch in ['0'..'9', ':']) then
   begin
     PromptType(Ch);
+    Key := #0;
+    Exit;
+  end;
+  if FPromptOpen and (FPromptKind = prDigits) and (Ch in ['0'..'9']) then
+  begin
+    PromptType(Ch);
+    Key := #0;
+    Exit;
+  end;
+  // a passphrase keeps its case and punctuation
+  if FPromptOpen and (FPromptKind = prText) and (Key >= #32) and (Key <= #126) then
+  begin
+    PromptType(Key);
     Key := #0;
     Exit;
   end;
@@ -2880,6 +2983,7 @@ begin
   SpawnConfetti(FCurrentRow);
   PlayRandom(WIN_SOUNDS);
   ShowStatus(Format('🎉 Solved "%s" in %d!', [FTargetWord, FCurrentRow + 1]), TONE_GOOD);
+  FamilyAfterGame(True);
   PaintBoxBar.Invalidate;
   StartAnim;
 end;
@@ -2890,6 +2994,7 @@ begin
   FLoseReason := Reason;
   TimerClock.Enabled := False;
   Inc(FTotalGames);
+  FamilyAfterGame(False);
   SpawnPoopStorm;
   PlayRandom(LOSE_SOUNDS);
   case Reason of
@@ -3287,6 +3392,12 @@ var
 begin
   Now0 := GetTickCount64;
 
+  if (FShowBoardAt > 0) and (GetTickCount64 >= FShowBoardAt) then
+  begin
+    FShowBoardAt := 0;
+    ShowLeaderboardCard;
+  end;
+
   for Row := 0 to High(FTiles) do
     for Col := 0 to High(FTiles[Row]) do
       if FTiles[Row, Col].Anim <> akNone then
@@ -3527,6 +3638,101 @@ begin
     'Ctrl+N new game  ·  Ctrl+M your own word',
     'Ctrl+L look up a word  ·  F1 this help']);
   ShowInfoCard('HOW TO PLAY', R);
+end;
+
+{ ------------------------------------------------------------------ }
+{ Family game server                                                  }
+{ ------------------------------------------------------------------ }
+
+procedure TForm1.LoadFamilyConfig;
+var
+  Ini: TIniFile;
+  Cfg: string;
+begin
+  Cfg := GetAppConfigDir(False);
+  ForceDirectories(Cfg);
+  ScoresInit(Cfg + 'family');
+  Ini := TIniFile.Create(Cfg + 'wordzel.ini');
+  try
+    FPlayerName := SanitizeName(Ini.ReadString('family', 'name', ''));
+    FFamilyPass := Ini.ReadString('family', 'passphrase', '');
+    FFamilyPort := Ini.ReadInteger('family', 'port', 8080);
+    if Ini.ReadBool('family', 'server', False) and (FFamilyPass <> '') then
+      FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TForm1.SaveFamilyConfig;
+var
+  Ini: TIniFile;
+begin
+  Ini := TIniFile.Create(GetAppConfigDir(False) + 'wordzel.ini');
+  try
+    Ini.WriteString('family', 'name', FPlayerName);
+    Ini.WriteString('family', 'passphrase', FFamilyPass);
+    Ini.WriteInteger('family', 'port', FFamilyPort);
+    Ini.WriteBool('family', 'server', FServer <> nil);
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TForm1.ToggleFamilyServer;
+begin
+  if FServer <> nil then
+  begin
+    FreeAndNil(FServer);
+    ShowStatus('Family server stopped');
+  end
+  else if FFamilyPass = '' then
+  begin
+    ShowStatus('Set a family passphrase first (☰ menu)', TONE_WARN);
+    Exit;
+  end
+  else
+  begin
+    FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
+    ShowStatus(Format('Family server on port %d', [FFamilyPort]), TONE_GOOD);
+  end;
+  SaveFamilyConfig;
+end;
+
+procedure TForm1.FamilyAfterGame(AWon: Boolean);
+begin
+  if FPlayerName = '' then
+    Exit;
+  AddScore(FPlayerName, FWordLength, FMaxGuesses,
+    Min(FMaxGuesses, Max(1, FCurrentRow + 1)), AWon);
+  FShowBoardAt := GetTickCount64 + 2200;
+end;
+
+procedure TForm1.ShowLeaderboardCard;
+var
+  R: TDefResult;
+  D, M: TStringList;
+  A: array of string;
+  I: Integer;
+begin
+  R := Default(TDefResult);
+  D := TStringList.Create;
+  M := TStringList.Create;
+  try
+    BoardLines(D, M);
+    SetLength(A, D.Count);
+    for I := 0 to D.Count - 1 do
+      A[I] := D[I];
+    AddInfo(R, 'today', A);
+    SetLength(A, M.Count);
+    for I := 0 to M.Count - 1 do
+      A[I] := M[I];
+    AddInfo(R, 'this month', A);
+  finally
+    M.Free;
+    D.Free;
+  end;
+  ShowInfoCard('FAMILY LEADERBOARD', R);
 end;
 
 procedure TForm1.ShowAboutCard;

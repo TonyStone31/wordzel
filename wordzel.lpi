@@ -12,7 +12,7 @@
         <DpiAware Value="True"/>
       </XPManifest>
       <Icon Value="0"/>
-      <Resources Count="16">
+      <Resources Count="20">
         <Resource_0 FileName="sounds/back.wav" Type="RCDATA" ResourceName="SND_BACK"/>
         <Resource_1 FileName="sounds/enter.wav" Type="RCDATA" ResourceName="SND_ENTER"/>
         <Resource_2 FileName="sounds/key.wav" Type="RCDATA" ResourceName="SND_KEY"/>
@@ -29,6 +29,10 @@
         <Resource_13 FileName="sounds/lose3.wav" Type="RCDATA" ResourceName="SND_LOSE3"/>
         <Resource_14 FileName="sounds/poop1.wav" Type="RCDATA" ResourceName="SND_POOP1"/>
         <Resource_15 FileName="sounds/poop2.wav" Type="RCDATA" ResourceName="SND_POOP2"/>
+        <Resource_16 FileName="www/index.html" Type="RCDATA" ResourceName="WWW_INDEX"/>
+        <Resource_17 FileName="www/style.css" Type="RCDATA" ResourceName="WWW_STYLE"/>
+        <Resource_18 FileName="www/app.js" Type="RCDATA" ResourceName="WWW_APP"/>
+        <Resource_19 FileName="www/words.js" Type="RCDATA" ResourceName="WWW_WORDS"/>
       </Resources>
     </General>
     <MacroValues Count="1">

@@ -15,3 +15,9 @@ lcltouch/repro/touchrepro
 dist/
 wordzel.exe
 
+
+# personal config and scores, in case any ever land in the tree
+wordzel.ini
+players.csv
+scores.csv
+family/

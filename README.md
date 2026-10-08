@@ -119,6 +119,36 @@ temp folder at startup), so the executable is the whole game - nothing else
 needs to be distributed. A `sounds/` folder beside the executable is used as
 a fallback if the embedded copies cannot be unpacked.
 
+## Network Play
+
+The desktop game doubles as the family game server - the web version of
+the game is compiled into the same binary. To set it up:
+
+1. Open **☰** on the machine that will host:
+   - **Player name...** - your own name, so your desktop games score too
+   - **Family passphrase...** - the one shared secret that lets people in
+   - **Server port...** - any free port (if the one you pick is taken, the
+     status line says so)
+   - **Run family server** - switch it on; it starts again with the game
+     from then on
+2. On every phone, tablet or other computer in the house, browse to
+   `http://<the host's IP>:<port>` - e.g. `http://192.168.1.10:8181`.
+3. First visit: type the family passphrase. Then pick your name from the
+   list, or type a new one with a PIN (3-6 digits). That's the whole
+   account system.
+
+Every finished game - desktop or web - earns leaderboard points: a win is
+worth `word length x (guesses remaining + 1)`, a loss is worth 1, and
+daily and monthly totals are plain sums, so playing a lot beats one lucky
+first try. The leaderboard pops up after every scored game and lives
+under ☰ / the 🏆 button.
+
+Settings persist in `wordzel.ini` and the scores in plain CSVs, all under
+the user's config folder (`~/.config/wordzel/` on Linux) - nothing is
+written next to the game. **There is no TLS or rate limiting in the game
+itself**: keep it on your own network, or put a reverse proxy that
+terminates TLS in front of it.
+
 ## Files
 
 - `unitfrmmain.pas` / `.lfm` - the game: board, keyboard, top bar, menus,

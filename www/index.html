@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Wordzel</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="topbar">
+  <button id="btnNew" title="New game">&#8635; New</button>
+  <button id="btnLevel">Level &#9662;</button>
+  <button id="btnBoard" title="Leaderboard">&#127942;</button>
+  <button id="btnSound" title="Sounds">&#128266;</button>
+  <span id="whoami"></span>
+</div>
+<div id="levelmenu" class="menu hidden"></div>
+
+<div id="boardwrap"><div id="board"></div></div>
+<div id="status"></div>
+<div id="keys"></div>
+
+<div id="overlay" class="hidden">
+  <div id="card">
+
+    <div id="join" class="pane hidden">
+      <h1>WORDZEL</h1>
+      <p>What is the family passphrase?</p>
+      <input id="joinPass" type="password" autocomplete="off">
+      <div class="err" id="joinErr"></div>
+      <button id="joinGo" class="big">Come in</button>
+    </div>
+
+    <div id="login" class="pane hidden">
+      <h1>WHO ARE YOU?</h1>
+      <div id="names"></div>
+      <input id="loginName" placeholder="or type a new name" maxlength="12">
+      <input id="loginPin" placeholder="PIN (3-6 digits)" type="password"
+             inputmode="numeric" maxlength="6">
+      <div class="err" id="loginErr"></div>
+      <button id="loginGo" class="big">Play</button>
+    </div>
+
+    <div id="boardpane" class="pane hidden">
+      <h1>FAMILY LEADERBOARD</h1>
+      <h2>today</h2>
+      <table id="tblDay"></table>
+      <h2>this month</h2>
+      <table id="tblMonth"></table>
+      <button id="boardClose" class="big">Keep playing</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="/words.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

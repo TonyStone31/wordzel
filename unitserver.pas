@@ -22,12 +22,12 @@ type
   TWordzelServer = class
   private
     FThread: TThread;
-    FPort: Word;
+    FPort: word;
     function GetError: string;
   public
-    constructor Create(APort: Word; const APassphrase: string);
+    constructor Create(APort: word; const APassphrase: string);
     destructor Destroy; override;
-    property Port: Word read FPort;
+    property Port: word read FPort;
     { '' while serving; the reason otherwise (port taken, no permission).
       Binding fails within moments, so check shortly after Create. }
     property Error: string read GetError;
@@ -47,19 +47,17 @@ type
     FServer: TFPHTTPServer;
     FFamToken: string;
     FError: string;
-    procedure HandleRequest(Sender: TObject;
-      var ARequest: TFPHTTPConnectionRequest;
-      var AResponse: TFPHTTPConnectionResponse);
+    procedure HandleRequest(Sender: TObject; var ARequest: TFPHTTPConnectionRequest; var AResponse: TFPHTTPConnectionResponse);
   protected
     procedure Execute; override;
   public
-    constructor Create(APort: Word; const APassphrase: string);
+    constructor Create(APort: word; const APassphrase: string);
     destructor Destroy; override;
   end;
 
-{ ------------------------------------------------------------------ }
+  { ------------------------------------------------------------------ }
 
-constructor TServerThread.Create(APort: Word; const APassphrase: string);
+constructor TServerThread.Create(APort: word; const APassphrase: string);
 begin
   FFamToken := MD5Print(MD5String('wordzel-family:' + APassphrase));
   FServer := TFPHTTPServer.Create(nil);
@@ -88,24 +86,20 @@ end;
 
 { ------------------------------------------------------------------ }
 
-procedure SendJSON(var AResponse: TFPHTTPConnectionResponse; const S: string;
-  ACode: Integer = 200);
+procedure SendJSON(var AResponse: TFPHTTPConnectionResponse; const S: string; ACode: integer = 200);
 begin
   AResponse.Code := ACode;
   AResponse.ContentType := 'application/json; charset=utf-8';
   AResponse.Content := S;
 end;
 
-procedure SendError(var AResponse: TFPHTTPConnectionResponse; ACode: Integer;
-  const Msg: string);
+procedure SendError(var AResponse: TFPHTTPConnectionResponse; ACode: integer; const Msg: string);
 begin
-  SendJSON(AResponse, '{"ok":false,"error":"' +
-    StringReplace(Msg, '"', '''', [rfReplaceAll]) + '"}', ACode);
+  SendJSON(AResponse, '{"ok":false,"error":"' + StringReplace(Msg, '"', '''', [rfReplaceAll]) + '"}', ACode);
 end;
 
 { True when the named RCDATA resource went out. }
-function SendResource(var AResponse: TFPHTTPConnectionResponse;
-  const ResName, AMime: string): Boolean;
+function SendResource(var AResponse: TFPHTTPConnectionResponse; const ResName, AMime: string): boolean;
 var
   R: TResourceStream;
 begin
@@ -122,20 +116,17 @@ begin
   Result := True;
 end;
 
-procedure SetCookie(var AResponse: TFPHTTPConnectionResponse;
-  const AName, AValue: string);
+procedure SetCookie(var AResponse: TFPHTTPConnectionResponse; const AName, AValue: string);
 begin
   AResponse.SetCustomHeader('Set-Cookie',
     AName + '=' + AValue + '; Path=/; Max-Age=31536000; SameSite=Lax');
 end;
 
-procedure TServerThread.HandleRequest(Sender: TObject;
-  var ARequest: TFPHTTPConnectionRequest;
-  var AResponse: TFPHTTPConnectionResponse);
+procedure TServerThread.HandleRequest(Sender: TObject; var ARequest: TFPHTTPConnectionRequest; var AResponse: TFPHTTPConnectionResponse);
 var
   Path, Base, Who, Err: string;
-  FamOK: Boolean;
-  Len, MaxG, Used: Integer;
+  FamOK: boolean;
+  Len, MaxG, Used: integer;
 begin
   Path := ARequest.PathInfo;
   if (Path = '') or (Path = '/') then
@@ -166,8 +157,7 @@ begin
   begin
     if ARequest.ContentFields.Values['pass'] <> '' then
     begin
-      if MD5Print(MD5String('wordzel-family:' +
-           ARequest.ContentFields.Values['pass'])) = FFamToken then
+      if MD5Print(MD5String('wordzel-family:' + ARequest.ContentFields.Values['pass'])) = FFamToken then
       begin
         SetCookie(AResponse, 'fam', FFamToken);
         SendJSON(AResponse, '{"ok":true}');
@@ -247,8 +237,7 @@ begin
     Len := StrToIntDef(ARequest.ContentFields.Values['len'], 0);
     MaxG := StrToIntDef(ARequest.ContentFields.Values['maxg'], 0);
     Used := StrToIntDef(ARequest.ContentFields.Values['used'], 0);
-    if (Len < 3) or (Len > 9) or (MaxG < 4) or (MaxG > 10) or
-       (Used < 1) or (Used > MaxG) then
+    if (Len < 3) or (Len > 9) or (MaxG < 4) or (MaxG > 10) or (Used < 1) or (Used > MaxG) then
     begin
       SendError(AResponse, 400, 'that is not a real game');
       Exit;
@@ -268,7 +257,7 @@ begin
   Result := TServerThread(FThread).FError;
 end;
 
-constructor TWordzelServer.Create(APort: Word; const APassphrase: string);
+constructor TWordzelServer.Create(APort: word; const APassphrase: string);
 begin
   FPort := APort;
   FThread := TServerThread.Create(APort, APassphrase);

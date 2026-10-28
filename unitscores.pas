@@ -21,16 +21,16 @@ uses
 procedure ScoresInit(const ADir: string);
 procedure ScoresDone;
 
-function ScorePoints(Len, MaxG, Used: Integer; Won: Boolean): Integer;
+function ScorePoints(Len, MaxG, Used: integer; Won: boolean): integer;
 
 { Letters and digits only, up to 12 of them. '' means unusable. }
 function SanitizeName(const S: string): string;
 
 { True when the name is usable. An unknown name is created on the spot
   (that is how you join); the family passphrase is the only lock. }
-function TryLogin(const AName: string; out Err: string): Boolean;
+function TryLogin(const AName: string; out Err: string): boolean;
 
-procedure AddScore(const AName: string; Len, MaxG, Used: Integer; Won: Boolean);
+procedure AddScore(const AName: string; Len, MaxG, Used: integer; Won: boolean);
 
 { A JSON array of names, for the login screen's pick list. }
 function PlayersJSON: string;
@@ -51,8 +51,8 @@ type
   TGame = record
     When: TDateTime;
     Name: string;
-    Len, MaxG, Used, Points: Integer;
-    Won: Boolean;
+    Len, MaxG, Used, Points: integer;
+    Won: boolean;
   end;
 
 var
@@ -61,7 +61,7 @@ var
   Players: array of string;
   Games: array of TGame;
 
-function ScorePoints(Len, MaxG, Used: Integer; Won: Boolean): Integer;
+function ScorePoints(Len, MaxG, Used: integer; Won: boolean): integer;
 begin
   if Won then
     Result := Len * (MaxG - Used + 1)
@@ -73,7 +73,7 @@ end;
 
 function SanitizeName(const S: string): string;
 var
-  I: Integer;
+  I: integer;
 begin
   Result := '';
   for I := 1 to Length(S) do
@@ -85,9 +85,9 @@ begin
     end;
 end;
 
-function FindPlayer(const AName: string): Integer;
+function FindPlayer(const AName: string): integer;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(Players) do
     if SameText(Players[I], AName) then
@@ -102,7 +102,7 @@ end;
 procedure SavePlayers;
 var
   L: TStringList;
-  I: Integer;
+  I: integer;
 begin
   if Dir = '' then
     Exit;
@@ -138,7 +138,7 @@ end;
 procedure LoadAll;
 var
   L, P: TStringList;
-  I, N: Integer;
+  I, N: integer;
   G: TGame;
 begin
   SetLength(Players, 0);
@@ -227,10 +227,10 @@ end;
 { Players and games                                                   }
 { ------------------------------------------------------------------ }
 
-function TryLogin(const AName: string; out Err: string): Boolean;
+function TryLogin(const AName: string; out Err: string): boolean;
 var
   Name: string;
-  N: Integer;
+  N: integer;
 begin
   Result := False;
   Err := '';
@@ -255,10 +255,10 @@ begin
   end;
 end;
 
-procedure AddScore(const AName: string; Len, MaxG, Used: Integer; Won: Boolean);
+procedure AddScore(const AName: string; Len, MaxG, Used: integer; Won: boolean);
 var
   G: TGame;
-  N: Integer;
+  N: integer;
 begin
   G.When := Now;
   G.Name := SanitizeName(AName);
@@ -288,7 +288,7 @@ end;
 function PlayersJSON: string;
 var
   A: TJSONArray;
-  I: Integer;
+  I: integer;
 begin
   Lock.Acquire;
   try
@@ -312,14 +312,14 @@ end;
 type
   TRow = record
     Name: string;
-    Points, Played, Won: Integer;
+    Points, Played, Won: integer;
   end;
   TRows = array of TRow;
 
 { Caller holds the lock. }
 function Rollup(FromDay: TDateTime): TRows;
 var
-  I, J, N: Integer;
+  I, J, N: integer;
 begin
   SetLength(Result, 0);
   for I := 0 to High(Games) do
@@ -352,7 +352,7 @@ end;
 { Largest first; family-sized, so a bubble will do. }
 procedure SortRows(var R: TRows);
 var
-  I, J: Integer;
+  I, J: integer;
   T: TRow;
 begin
   for I := 0 to High(R) do
@@ -367,7 +367,7 @@ end;
 
 function RowsJSON(const R: TRows): TJSONArray;
 var
-  I: Integer;
+  I: integer;
   O: TJSONObject;
 begin
   Result := TJSONArray.Create;
@@ -408,7 +408,7 @@ end;
 
 procedure RowsToLines(const R: TRows; L: TStrings);
 var
-  I: Integer;
+  I: integer;
 begin
   if Length(R) = 0 then
   begin
@@ -416,8 +416,7 @@ begin
     Exit;
   end;
   for I := 0 to High(R) do
-    L.Add(Format('%d. %s - %d pts (%d won of %d)',
-      [I + 1, R[I].Name, R[I].Points, R[I].Won, R[I].Played]));
+    L.Add(Format('%d. %s - %d pts (%d won of %d)', [I + 1, R[I].Name, R[I].Points, R[I].Won, R[I].Played]));
 end;
 
 procedure BoardLines(Day, Month: TStrings);

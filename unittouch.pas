@@ -23,10 +23,10 @@ type
   TTouchPhase = (tpBegin, tpMove, tpEnd, tpCancel);
 
   { Seq tells fingers apart; SX, SY are screen coordinates. }
-  TTouchEvent = procedure(Phase: TTouchPhase; Seq: Pointer; SX, SY: Integer) of object;
+  TTouchEvent = procedure(Phase: TTouchPhase; Seq: Pointer; SX, SY: integer) of object;
 
 { Needs the form's handle to exist. True if a handler was installed. }
-function InstallTouchHandler(AForm: TCustomForm; AHandler: TTouchEvent): Boolean;
+function InstallTouchHandler(AForm: TCustomForm; AHandler: TTouchEvent): boolean;
 
 implementation
 
@@ -86,7 +86,7 @@ end;
 
 {$ELSE}
 
-function InstallTouchHandler(AForm: TCustomForm; AHandler: TTouchEvent): Boolean;
+function InstallTouchHandler(AForm: TCustomForm; AHandler: TTouchEvent): boolean;
 begin
   Result := False;
 end;

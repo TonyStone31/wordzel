@@ -26,17 +26,17 @@ const
   MAX_WORD_LEN = 9;
 
 { True for any dictionary word - all words stay legal as guesses. }
-function IsValidWord(const AWord: string): Boolean;
+function IsValidWord(const AWord: string): boolean;
 
 { A random word of ALen letters drawn from the eligible pool.
   Always returns a word of exactly ALen letters (or '' if ALen is absurd). }
-function PickWord(ALen: Integer): string;
+function PickWord(ALen: integer): string;
 
 { Pool introspection, used by the in-game developer panel. Every pool word
   sits within the PoolThreshold most common words of the language. }
-function PoolSize(ALen: Integer): Integer;
-function PoolThreshold(ALen: Integer): Integer;
-function PoolItem(ALen, AIndex: Integer): string;
+function PoolSize(ALen: integer): integer;
+function PoolThreshold(ALen: integer): integer;
+function PoolItem(ALen, AIndex: integer): string;
 
 implementation
 
@@ -55,13 +55,13 @@ type
 
 var
   Pools: array[MIN_WORD_LEN..MAX_WORD_LEN] of TWordArray;
-  Thresholds: array[MIN_WORD_LEN..MAX_WORD_LEN] of Integer;
-  PoolReady: array[MIN_WORD_LEN..MAX_WORD_LEN] of Boolean;
+  Thresholds: array[MIN_WORD_LEN..MAX_WORD_LEN] of integer;
+  PoolReady: array[MIN_WORD_LEN..MAX_WORD_LEN] of boolean;
 
 { Index of the first entry >= S. }
-function LowerBound(const S: string): Integer;
+function LowerBound(const S: string): integer;
 var
-  Lo, Hi, Mid: Integer;
+  Lo, Hi, Mid: integer;
 begin
   Lo := Low(WORD_LIST);
   Hi := High(WORD_LIST) + 1;
@@ -83,9 +83,9 @@ const
     'SHART', 'SHARTS', 'SHARTED', 'SHARTING',
     'DOODOO', 'DOODIE', 'DOOKIE', 'CACA', 'PEEPEE', 'WEEWEE', 'TUSHY');
 
-function IsValidWord(const AWord: string): Boolean;
+function IsValidWord(const AWord: string): boolean;
 var
-  I: Integer;
+  I: integer;
   U: string;
 begin
   U := UpperCase(Trim(AWord));
@@ -98,11 +98,11 @@ begin
   Result := (I <= High(WORD_LIST)) and (WORD_LIST[I] = U);
 end;
 
-procedure BuildPool(ALen: Integer);
+procedure BuildPool(ALen: integer);
 var
   Cands: TWordArray;
-  Ranks: array of Integer;
-  I, Count, Keep: Integer;
+  Ranks: array of integer;
+  I, Count, Keep: integer;
 begin
   SetLength(Cands, Length(COMMON_WORDS));
   SetLength(Ranks, Length(COMMON_WORDS));
@@ -137,18 +137,18 @@ begin
   PoolReady[ALen] := True;
 end;
 
-procedure EnsurePool(ALen: Integer);
+procedure EnsurePool(ALen: integer);
 begin
   if not PoolReady[ALen] then
     BuildPool(ALen);
 end;
 
-function ClampLen(ALen: Integer): Integer; inline;
+function ClampLen(ALen: integer): integer; inline;
 begin
   Result := Max(MIN_WORD_LEN, Min(MAX_WORD_LEN, ALen));
 end;
 
-function PickWord(ALen: Integer): string;
+function PickWord(ALen: integer): string;
 begin
   ALen := ClampLen(ALen);
   EnsurePool(ALen);
@@ -157,21 +157,21 @@ begin
   Result := Pools[ALen][Random(Length(Pools[ALen]))];
 end;
 
-function PoolSize(ALen: Integer): Integer;
+function PoolSize(ALen: integer): integer;
 begin
   ALen := ClampLen(ALen);
   EnsurePool(ALen);
   Result := Length(Pools[ALen]);
 end;
 
-function PoolThreshold(ALen: Integer): Integer;
+function PoolThreshold(ALen: integer): integer;
 begin
   ALen := ClampLen(ALen);
   EnsurePool(ALen);
   Result := Thresholds[ALen];
 end;
 
-function PoolItem(ALen, AIndex: Integer): string;
+function PoolItem(ALen, AIndex: integer): string;
 begin
   ALen := ClampLen(ALen);
   EnsurePool(ALen);

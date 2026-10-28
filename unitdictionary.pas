@@ -27,22 +27,22 @@ type
   end;
 
   TDefResult = record
-    Word: string;
+    word: string;
     Phonetic: string;
     Entries: array of TDefEntry;
     Error: string;       // '' when the lookup succeeded
     Source: string;      // which service answered, for the card footer
   end;
 
-  { Blocking. Safe to call from a worker thread. }
-  function FetchDefinition(const AWord: string): TDefResult;
+{ Blocking. Safe to call from a worker thread. }
+function FetchDefinition(const AWord: string): TDefResult;
 
 type
   TLookupThread = class(TThread)
   private
     FWord: string;
     FResult: TDefResult;
-    FDone: Boolean;
+    FDone: boolean;
     FLock: TCriticalSection;
   protected
     procedure Execute; override;
@@ -50,7 +50,7 @@ type
     constructor Create(const AWord: string);
     destructor Destroy; override;
     { True once, when the result is ready; hands it over. }
-    function TryTakeResult(out AResult: TDefResult): Boolean;
+    function TryTakeResult(out AResult: TDefResult): boolean;
     property LookupWord: string read FWord;
   end;
 
@@ -74,7 +74,7 @@ const
   bodies are not text we want. Tag stripping alone leaves the CSS behind. }
 function RemoveElement(const S, Tag: string): string;
 var
-  OpenAt, CloseAt, Scan: Integer;
+  OpenAt, CloseAt, Scan: integer;
   Lower: string;
 begin
   Result := S;
@@ -100,7 +100,7 @@ end;
 { Wiktionary returns definitions with Parsoid markup embedded in them. }
 function StripHtml(const S: string): string;
 var
-  I, Depth: Integer;
+  I, Depth: integer;
   Src: string;
 begin
   Src := RemoveElement(S, 'style');
@@ -284,7 +284,7 @@ end;
 { True only if the server actually answered with a body. On a timeout
   TFPHTTPClient returns nothing rather than raising, so without this check an
   unreachable service looks exactly like an unknown word. }
-function HttpGet(const URL: string; out Body: string): Boolean;
+function HttpGet(const URL: string; out Body: string): boolean;
 var
   Client: TFPHTTPClient;
 begin
@@ -310,7 +310,7 @@ end;
 
 procedure AddEntry(var R: TDefResult; const APart: string; ASenses: TStringList);
 var
-  N, I: Integer;
+  N, I: integer;
 begin
   if ASenses.Count = 0 then
     Exit;
@@ -324,12 +324,12 @@ end;
 
 (* https://en.wiktionary.org/api/rest_v1/page/definition/<word>
    -> { "en": [ { partOfSpeech, definitions: [ { definition } ] } ] } *)
-function ParseWiktionary(const Body: string; var R: TDefResult): Boolean;
+function ParseWiktionary(const Body: string; var R: TDefResult): boolean;
 var
   Data: TJSONData;
   Sections, Defs: TJSONArray;
   Section: TJSONObject;
-  I, J: Integer;
+  I, J: integer;
   Txt: string;
   Senses: TStringList;
 begin
@@ -381,12 +381,12 @@ end;
 
 (* https://api.dictionaryapi.dev/api/v2/entries/en/<word>
    -> [ { word, phonetic, meanings: [ { partOfSpeech, definitions } ] } ] *)
-function ParseDictionaryApi(const Body: string; var R: TDefResult): Boolean;
+function ParseDictionaryApi(const Body: string; var R: TDefResult): boolean;
 var
   Data: TJSONData;
   Entries, Meanings, Defs: TJSONArray;
   Entry, Meaning: TJSONObject;
-  I, J: Integer;
+  I, J: integer;
   Txt: string;
   Senses: TStringList;
 begin
@@ -446,11 +446,11 @@ end;
 function FetchDefinition(const AWord: string): TDefResult;
 var
   Body, Clean: string;
-  Reached: Boolean;
+  Reached: boolean;
 begin
   Result := Default(TDefResult);
   Clean := LowerCase(Trim(AWord));
-  Result.Word := UpperCase(Clean);
+  Result.word := UpperCase(Clean);
 
   if Clean = '' then
   begin
@@ -513,7 +513,7 @@ begin
   end;
 end;
 
-function TLookupThread.TryTakeResult(out AResult: TDefResult): Boolean;
+function TLookupThread.TryTakeResult(out AResult: TDefResult): boolean;
 begin
   FLock.Acquire;
   try

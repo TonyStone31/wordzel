@@ -16,11 +16,15 @@ uses
   {$IFDEF UNIX}
   cthreads, BaseUnix,
   {$ENDIF}
-  SysUtils, CustApp, IniFiles, unitscores, unitserver;
+  SysUtils,
+  CustApp,
+  IniFiles,
+  unitscores,
+  unitserver;
 
-{ The game's resource file: the web pages and sounds are listed once, in
+ { The game's resource file: the web pages and sounds are listed once, in
   wordzel.lpi, and the game's build keeps this file current. }
-{$R wordzel.res}
+  {$R wordzel.res}
 
 type
   TServerApp = class(TCustomApplication)
@@ -29,73 +33,72 @@ type
   end;
 
 var
-  Stopping: Boolean = False;
+  Stopping: boolean = False;
 
-{$IFDEF UNIX}
+  {$IFDEF UNIX}
 procedure HandleStop(Sig: cint); cdecl;
 begin
   Stopping := True;
 end;
-{$ENDIF}
+  {$ENDIF}
 
-{ The game's name, so GetAppConfigDir finds the game's folder. }
-function WordzelName: string;
-begin
-  Result := 'wordzel';
-end;
-
-procedure TServerApp.DoRun;
-var
-  Dir, Pass: string;
-  Port: Integer;
-  Ini: TIniFile;
-  Server: TWordzelServer;
-begin
-  Terminate;
-  Dir := GetOptionValue('c', 'config');
-  if Dir = '' then
-    Dir := GetAppConfigDir(False);
-  Dir := IncludeTrailingPathDelimiter(ExpandFileName(Dir));
-
-  Ini := TIniFile.Create(Dir + 'wordzel.ini');
-  try
-    Pass := Ini.ReadString('family', 'passphrase', '');
-    Port := Ini.ReadInteger('family', 'port', 8080);
-  finally
-    Ini.Free;
-  end;
-  if Pass = '' then
+  { The game's name, so GetAppConfigDir finds the game's folder. }
+  function WordzelName: string;
   begin
-    WriteLn(StdErr, 'No family passphrase: put passphrase= under [family] in ',
-      Dir, 'wordzel.ini');
-    ExitCode := 1;
-    Exit;
+    Result := 'wordzel';
   end;
 
-  ScoresInit(Dir + 'family');
-  Server := TWordzelServer.Create(Port, Pass);
-  try
-    Sleep(400);   // binding fails within moments, see TWordzelServer.Error
-    if Server.Error <> '' then
+  procedure TServerApp.DoRun;
+  var
+    Dir, Pass: string;
+    Port: integer;
+    Ini: TIniFile;
+    Server: TWordzelServer;
+  begin
+    Terminate;
+    Dir := GetOptionValue('c', 'config');
+    if Dir = '' then
+      Dir := GetAppConfigDir(False);
+    Dir := IncludeTrailingPathDelimiter(ExpandFileName(Dir));
+
+    Ini := TIniFile.Create(Dir + 'wordzel.ini');
+    try
+      Pass := Ini.ReadString('family', 'passphrase', '');
+      Port := Ini.ReadInteger('family', 'port', 8080);
+    finally
+      Ini.Free;
+    end;
+    if Pass = '' then
     begin
-      WriteLn(StdErr, Format('Port %d did not work: %s', [Port, Server.Error]));
+      WriteLn(StdErr, 'No family passphrase: put passphrase= under [family] in ',
+        Dir, 'wordzel.ini');
       ExitCode := 1;
       Exit;
     end;
-    WriteLn(Format('Wordzel family server on port %d, scores in %sfamily',
-      [Port, Dir]));
-    Flush(Output);   // a service's log is a pipe, not a terminal
-    {$IFDEF UNIX}
+
+    ScoresInit(Dir + 'family');
+    Server := TWordzelServer.Create(Port, Pass);
+    try
+      Sleep(400);   // binding fails within moments, see TWordzelServer.Error
+      if Server.Error <> '' then
+      begin
+        WriteLn(StdErr, Format('Port %d did not work: %s', [Port, Server.Error]));
+        ExitCode := 1;
+        Exit;
+      end;
+      WriteLn(Format('Wordzel family server on port %d, scores in %sfamily', [Port, Dir]));
+      Flush(Output);   // a service's log is a pipe, not a terminal
+      {$IFDEF UNIX}
     fpSignal(SIGTERM, @HandleStop);
     fpSignal(SIGINT, @HandleStop);
-    {$ENDIF}
-    while not Stopping do
-      Sleep(250);
-  finally
-    Server.Free;
-    ScoresDone;
+      {$ENDIF}
+      while not Stopping do
+        Sleep(250);
+    finally
+      Server.Free;
+      ScoresDone;
+    end;
   end;
-end;
 
 var
   App: TServerApp;

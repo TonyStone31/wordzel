@@ -32,18 +32,18 @@ type
   TParticleKind = (ptFly, ptBounce, ptVortex, ptText);
 
   TTileInfo = record
-    Letter: Char;
+    Letter: char;
     State: TTileState;
     NextState: TTileState;
     Anim: TAnimKind;
     T0: QWord;          // animation start, may be in the future (stagger)
-    Dur: Integer;
+    Dur: integer;
   end;
 
   TKeyInfo = record
     Bounds: TRect;
     Kind: TKeyKind;
-    Ch: Char;
+    Ch: char;
     Text: string;
   end;
 
@@ -52,31 +52,31 @@ type
   TCardLine = record
     Kind: TCardLineKind;
     Text: string;
-    Indent: Integer;
+    Indent: integer;
   end;
 
   TParticle = record
     Kind: TParticleKind;
-    X, Y, VX, VY, Grav: Double;
-    Life: Double;
-    Size, Grow: Double;
+    X, Y, VX, VY, Grav: double;
+    Life: double;
+    Size, Grow: double;
     Glyph: string;
     Color: TColor;
-    CX, CY, Ang, Rad, AngVel: Double;   // ptVortex: circling a center
+    CX, CY, Ang, Rad, AngVel: double;   // ptVortex: circling a center
   end;
 
   TMenuEntry = record
     Caption: string;
     Shortcut: string;
-    Action: Integer;
-    Enabled, Checked, Separator: Boolean;
+    Action: integer;
+    Enabled, Checked, Separator: boolean;
     Bounds: TRect;      // filled in when the menu is drawn
   end;
 
   TBarButton = record
     Bounds: TRect;
     Caption: string;
-    Action: Integer;
+    Action: integer;
   end;
 
   { TForm1 }
@@ -93,28 +93,22 @@ type
     TimerHold: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure FormKeyPress(Sender: TObject; var Key: char);
     procedure FormResize(Sender: TObject);
-    procedure PaintBoxBarMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxBarMouseLeave(Sender: TObject);
-    procedure PaintBoxBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure PaintBoxBarMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure PaintBoxBarMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxBarPaint(Sender: TObject);
-    procedure PaintBoxBoardMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure PaintBoxBoardMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure PaintBoxBoardMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxBoardMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure PaintBoxBoardMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure PaintBoxBoardMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxBoardPaint(Sender: TObject);
-    procedure PaintBoxKeysMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxKeysMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxKeysMouseLeave(Sender: TObject);
-    procedure PaintBoxKeysMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure PaintBoxKeysMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure PaintBoxKeysMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure PaintBoxKeysMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure PaintBoxKeysPaint(Sender: TObject);
     procedure TimerAnimTimer(Sender: TObject);
     procedure TimerClockTimer(Sender: TObject);
@@ -126,98 +120,98 @@ type
     FKeyState: array['A'..'Z'] of TTileState;
     FTargetWord: string;
     FCurrentGuess: string;
-    FCurrentRow, FCurrentCol: Integer;
-    FWordLength, FMaxGuesses: Integer;
-    FDifficulty: Integer;        // word length for random games; a custom word brings its own
-    FAnyGuess: Boolean;          // made-up secret word, so guesses skip the dictionary
-    FCustomGame: Boolean;
+    FCurrentRow, FCurrentCol: integer;
+    FWordLength, FMaxGuesses: integer;
+    FDifficulty: integer;        // word length for random games; a custom word brings its own
+    FAnyGuess: boolean;          // made-up secret word, so guesses skip the dictionary
+    FCustomGame: boolean;
     FPhase: TGamePhase;
     FLoseReason: TLoseReason;
-    FWins, FTotalGames: Integer;
-    FDebugMode: Boolean;
+    FWins, FTotalGames: integer;
+    FDebugMode: boolean;
     FBootT: QWord;
 
     // Family game server
     FPlayerName: string;
     FFamilyPass: string;
-    FFamilyPort: Integer;
+    FFamilyPort: integer;
     FServer: TWordzelServer;
     FShowBoardAt: QWord;
 
     // Board geometry, recomputed from the paint box on every repaint
-    FTileSize, FTileGap, FBoardX, FBoardY, FBoardW, FBoardH: Integer;
+    FTileSize, FTileGap, FBoardX, FBoardY, FBoardW, FBoardH: integer;
 
     // Animation
-    FRevealRow: Integer;
+    FRevealRow: integer;
     FRevealDone: QWord;
-    FShakeRow, FShakeOffset: Integer;
+    FShakeRow, FShakeOffset: integer;
     FShakeT0: QWord;
     FParticles: array of TParticle;
-    FRainSeed: Integer;
-    FRaining: Boolean;
-    FQuakeOn: Boolean;
+    FRainSeed: integer;
+    FRaining: boolean;
+    FQuakeOn: boolean;
     FQuakeT0: QWord;
-    FQuakeDX, FQuakeDY: Integer;
-    FToiletOn, FFlushPlayed: Boolean;
+    FQuakeDX, FQuakeDY: integer;
+    FToiletOn, FFlushPlayed: boolean;
     FToiletT0: QWord;
-    FToiletFrame: Integer;
+    FToiletFrame: integer;
 
     // Keyboard widget
     FKeys: array of TKeyInfo;
-    FHotKey, FPressedKey, FFlashKey: Integer;
+    FHotKey, FPressedKey, FFlashKey: integer;
     FFlashT0: QWord;
-    FKeysDirty: Boolean;
+    FKeysDirty: boolean;
 
     // Definition / info card
     FLookupThread: TLookupThread;
     FCardResult: TDefResult;
     FCardLines: array of TCardLine;
     FCardWord: string;
-    FCardVisible, FCardLoading, FCardNumbered: Boolean;
+    FCardVisible, FCardLoading, FCardNumbered: boolean;
     FCardT0: QWord;
 
     // In-window menus (bar dropdowns and the row menu)
     FMenuItems: array of TMenuEntry;
-    FMenuOpen: Boolean;
+    FMenuOpen: boolean;
     FMenuRect: TRect;
     FMenuAnchor: TPoint;
-    FMenuHot: Integer;
-    FMenuSource: Integer;
+    FMenuHot: integer;
+    FMenuSource: integer;
     FMenuRowWord: string;
 
     // In-window text prompt
-    FPromptOpen: Boolean;
+    FPromptOpen: boolean;
     FPromptKind: TPromptKind;
-    FPromptAction: Integer;
+    FPromptAction: integer;
     FPromptTitle, FPromptHint, FPromptText, FPromptError: string;
-    FPromptMax: Integer;
+    FPromptMax: integer;
     FPromptOKRect, FPromptCancelRect: TRect;
 
     // Top bar
     FBarButtons: array of TBarButton;
-    FBarHot, FBarPressed: Integer;
-    FBarCompact, FBarHideScore: Boolean;
+    FBarHot, FBarPressed: integer;
+    FBarCompact, FBarHideScore: boolean;
 
     // Press-and-hold on the board
     FHoldPt: TPoint;
-    FHoldArmed, FHoldFired: Boolean;
+    FHoldArmed, FHoldFired: boolean;
 
     // Touchscreen
     FTouchSeq: Pointer;
     FTouchTarget: TControl;
-    FInTouch: Boolean;
+    FInTouch: boolean;
     FLastTouchT: QWord;
-    FTouchInstalled: Boolean;
+    FTouchInstalled: boolean;
 
     // Hourglass
     FTimerMode: TTimerMode;
-    FTimerSecs: Integer;
-    FTimeTotalMs, FTimeLeftMs: Int64;
+    FTimerSecs: integer;
+    FTimeTotalMs, FTimeLeftMs: int64;
     FClockLast: QWord;
-    FLastTickSec: Integer;
+    FLastTickSec: integer;
 
     // Sound
-    FSoundOn, FClicksOn: Boolean;
+    FSoundOn, FClicksOn: boolean;
     FSoundProcs: TList;
     FPlayer: string;
     FSoundDir: string;
@@ -225,105 +219,102 @@ type
 
     // Board
     procedure ComputeBoardMetrics;
-    function TileRect(Row, Col: Integer): TRect;
-    function RowAtPoint(X, Y: Integer): Integer;
-    procedure DrawTile(C: TCanvas; Row, Col: Integer);
+    function TileRect(Row, Col: integer): TRect;
+    function RowAtPoint(X, Y: integer): integer;
+    procedure DrawTile(C: TCanvas; Row, Col: integer);
     procedure DrawParticles(C: TCanvas);
-    procedure ToiletPose(Elapsed: Int64; out X, Y, Size: Double);
+    procedure ToiletPose(Elapsed: int64; out X, Y, Size: double);
     procedure DrawToilet(C: TCanvas);
     procedure DrawEndBanner(C: TCanvas);
-    procedure BoardClick(X, Y: Integer);
+    procedure BoardClick(X, Y: integer);
     procedure CancelHold;
 
     // Keyboard
     procedure LayoutKeys;
-    procedure AddKey(const R: TRect; Kind: TKeyKind; Ch: Char; const ALabel: string);
-    procedure DrawKey(C: TCanvas; Index: Integer);
-    function KeyAtPoint(X, Y: Integer): Integer;
-    function KeyIndexOf(Kind: TKeyKind; Ch: Char): Integer;
-    procedure UpdateCheatHint(KeyIndex: Integer; Shift: TShiftState);
+    procedure AddKey(const R: TRect; Kind: TKeyKind; Ch: char; const ALabel: string);
+    procedure DrawKey(C: TCanvas; Index: integer);
+    function KeyAtPoint(X, Y: integer): integer;
+    function KeyIndexOf(Kind: TKeyKind; Ch: char): integer;
+    procedure UpdateCheatHint(KeyIndex: integer; Shift: TShiftState);
 
     // Top bar
-    function TimerCaption(Compact: Boolean): string;
-    function ScoreText(Compact: Boolean): string;
-    function TimerShowing: Boolean;
-    function BarRightWidth(C: TCanvas; Compact, HideScore: Boolean): Integer;
+    function TimerCaption(Compact: boolean): string;
+    function ScoreText(Compact: boolean): string;
+    function TimerShowing: boolean;
+    function BarRightWidth(C: TCanvas; Compact, HideScore: boolean): integer;
     procedure LayoutBar(C: TCanvas);
-    procedure DrawBarButton(C: TCanvas; Index: Integer);
+    procedure DrawBarButton(C: TCanvas; Index: integer);
     procedure DrawBarRight(C: TCanvas);
-    procedure DrawHourglass(C: TCanvas; const R: TRect; Frac: Double; Running: Boolean);
-    function BarButtonAt(X, Y: Integer): Integer;
-    procedure BarClick(Index: Integer);
+    procedure DrawHourglass(C: TCanvas; const R: TRect; Frac: double; Running: boolean);
+    function BarButtonAt(X, Y: integer): integer;
+    procedure BarClick(Index: integer);
 
     // Menus
     procedure ClearMenu;
-    procedure AddMenuItem(const ACaption: string; AAction: Integer;
-      AEnabled: Boolean = True; AChecked: Boolean = False; const AShortcut: string = '');
+    procedure AddMenuItem(const ACaption: string; AAction: integer; AEnabled: boolean = True; AChecked: boolean = False; const AShortcut: string = '');
     procedure AddMenuSep;
-    procedure ShowMenu(ASource, AX, AY: Integer);
+    procedure ShowMenu(ASource, AX, AY: integer);
     procedure CloseMenu;
-    procedure OpenBarMenu(AMenu, AX: Integer);
-    procedure OpenRowMenu(AX, AY: Integer);
+    procedure OpenBarMenu(AMenu, AX: integer);
+    procedure OpenRowMenu(AX, AY: integer);
     procedure DrawMenu(C: TCanvas);
-    function MenuItemAt(X, Y: Integer): Integer;
-    procedure MoveMenuHot(Dir: Integer);
-    procedure ActivateMenuItem(Index: Integer);
-    procedure RunAction(Act: Integer);
+    function MenuItemAt(X, Y: integer): integer;
+    procedure MoveMenuHot(Dir: integer);
+    procedure ActivateMenuItem(Index: integer);
+    procedure RunAction(Act: integer);
 
     // Prompt
-    procedure OpenPrompt(AKind: TPromptKind; AAction: Integer;
-      const ATitle, AHint, AInitial: string; AMaxLen: Integer);
+    procedure OpenPrompt(AKind: TPromptKind; AAction: integer; const ATitle, AHint, AInitial: string; AMaxLen: integer);
     procedure ClosePrompt;
-    procedure PromptType(Ch: Char);
+    procedure PromptType(Ch: char);
     procedure PromptBack;
     procedure PromptAccept;
     procedure DrawPrompt(C: TCanvas);
 
     // Input
-    procedure TypeLetter(Ch: Char);
+    procedure TypeLetter(Ch: char);
     procedure PressBack;
     procedure PressEnter;
-    function IgnoreMouse: Boolean;
-    function TouchTargetAt(SX, SY: Integer): TControl;
-    procedure HandleTouch(Phase: TTouchPhase; Seq: Pointer; SX, SY: Integer);
+    function IgnoreMouse: boolean;
+    function TouchTargetAt(SX, SY: integer): TControl;
+    procedure HandleTouch(Phase: TTouchPhase; Seq: Pointer; SX, SY: integer);
     procedure FormFirstShow(Sender: TObject);
 
     // Game flow
-    procedure StartNewGame(WordLength: Integer; const ManualWord: string = '');
-    function MaxGuessesFor(WordLength: Integer): Integer;
-    procedure AddLetter(Letter: Char);
+    procedure StartNewGame(WordLength: integer; const ManualWord: string = '');
+    function MaxGuessesFor(WordLength: integer): integer;
+    procedure AddLetter(Letter: char);
     procedure RemoveLetter;
     procedure SubmitGuess;
-    procedure EvaluateGuess(Row: Integer; const Guess: string);
-    procedure StartReveal(Row: Integer);
+    procedure EvaluateGuess(Row: integer; const Guess: string);
+    procedure StartReveal(Row: integer);
     procedure FinishReveal;
-    procedure ApplyKeyboardStates(Row: Integer);
+    procedure ApplyKeyboardStates(Row: integer);
     procedure WinGame;
     procedure LoseGame(Reason: TLoseReason);
-    procedure ShowStatus(const Msg: string; Tone: Integer = 0);
-    procedure SetTimerMode(AMode: TTimerMode; ASecs: Integer);
+    procedure ShowStatus(const Msg: string; Tone: integer = 0);
+    procedure SetTimerMode(AMode: TTimerMode; ASecs: integer);
     procedure ResetGameClock;
 
     // Effects
     procedure StartAnim;
-    function AnimationPending: Boolean;
-    procedure ShakeRow(Row: Integer);
-    procedure FlashKey(Kind: TKeyKind; Ch: Char);
-    function AddParticle(AX, AY, AVX, AVY, AGrav, ALife: Double;
-      ASize: Integer; const AGlyph: string): Integer;
-    procedure SpawnConfetti(Row: Integer);
+    function AnimationPending: boolean;
+    procedure ShakeRow(Row: integer);
+    procedure FlashKey(Kind: TKeyKind; Ch: char);
+    function AddParticle(AX, AY, AVX, AVY, AGrav, ALife: double; ASize: integer; const AGlyph: string): integer;
+    procedure SpawnConfetti(Row: integer);
     procedure SpawnPoopStorm;
     procedure TopUpRain;
     procedure SpawnComicWord;
     procedure UpdateParticles;
-    procedure StartPoopShow(Row: Integer);
+    procedure StartPoopShow(Row: integer);
     procedure UpdateToilet(Now0: QWord);
     procedure MaybeEasterEgg(const Guess: string);
 
     // Sound
     procedure ExtractSounds;
     procedure ExtractSoundsAsync(Data: PtrInt);
-    procedure ReapSounds(All: Boolean);
+    procedure ReapSounds(All: boolean);
     procedure PlayASound(const SoundFile: string);
     procedure PlayClick(const SoundFile: string);
     procedure PlayRandom(const Files: array of string);
@@ -335,18 +326,17 @@ type
     procedure ShowLeaderboardCard;
     procedure LoadFamilyConfig;
     procedure SaveFamilyConfig;
-    function StartFamilyServer: Boolean;
+    function StartFamilyServer: boolean;
     procedure ToggleFamilyServer;
-    procedure FamilyAfterGame(AWon: Boolean);
+    procedure FamilyAfterGame(AWon: boolean);
     procedure ShowPoolInfo;
-    function WordInRow(Row: Integer): string;
+    function WordInRow(Row: integer): string;
     procedure StartLookup(const AWord: string);
     procedure CancelLookup;
     procedure PollLookup;
     procedure CloseCard;
-    procedure WrapInto(C: TCanvas; const S: string; MaxWidth: Integer;
-      Kind: TCardLineKind; Indent, ContIndent: Integer);
-    procedure BuildCardLines(C: TCanvas; TextWidth: Integer);
+    procedure WrapInto(C: TCanvas; const S: string; MaxWidth: integer; Kind: TCardLineKind; Indent, ContIndent: integer);
+    procedure BuildCardLines(C: TCanvas; TextWidth: integer);
     procedure DrawDefinitionCard(C: TCanvas);
   public
 
@@ -361,25 +351,25 @@ uses
   LCLIntf, Math, IniFiles, unitscores, unitwordpicker
   {$IFDEF WINDOWS}, MMSystem{$ELSE}, Process{$ENDIF};
 
-{$R *.lfm}
+  {$R *.lfm}
 
 const
   // TColor is $00BBGGRR
-  CLR_BG          = $00161212;  // #121216 page background
-  CLR_PANEL       = $00211B1B;  // #1B1B21 header / cards
-  CLR_SHADOW      = $00080606;  // drop shadows under floating cards
-  CLR_TILE_BG     = $001C1717;  // #17171C empty tile
-  CLR_TILE_EDGE   = $003E3A3A;  // #3A3A3E empty tile border
-  CLR_TILE_EDGE_HI= $005C5656;  // #56565C tile holding a letter
-  CLR_CORRECT     = $0063A34F;  // #4FA363 right letter, right spot
-  CLR_PRESENT     = $0027A2C9;  // #C9A227 right letter, wrong spot
-  CLR_ABSENT      = $003E3A3A;  // #3A3A3E not in the word
-  CLR_KEY         = $00463E3E;  // #3E3E46 keyboard key
-  CLR_KEY_ALT     = $00564C4C;  // #4C4C56 ENTER / BACK
-  CLR_KEY_DEAD    = $002E2A2A;  // #2A2A2E used-up key
-  CLR_TEXT        = $00F4F2F2;  // #F2F2F4
-  CLR_DIM         = $00A69A9A;  // #9A9AA6
-  CLR_ACCENT      = $00457AFF;  // #FF7A45
+  CLR_BG = $00161212;  // #121216 page background
+  CLR_PANEL = $00211B1B;  // #1B1B21 header / cards
+  CLR_SHADOW = $00080606;  // drop shadows under floating cards
+  CLR_TILE_BG = $001C1717;  // #17171C empty tile
+  CLR_TILE_EDGE = $003E3A3A;  // #3A3A3E empty tile border
+  CLR_TILE_EDGE_HI = $005C5656;  // #56565C tile holding a letter
+  CLR_CORRECT = $0063A34F;  // #4FA363 right letter, right spot
+  CLR_PRESENT = $0027A2C9;  // #C9A227 right letter, wrong spot
+  CLR_ABSENT = $003E3A3A;  // #3A3A3E not in the word
+  CLR_KEY = $00463E3E;  // #3E3E46 keyboard key
+  CLR_KEY_ALT = $00564C4C;  // #4C4C56 ENTER / BACK
+  CLR_KEY_DEAD = $002E2A2A;  // #2A2A2E used-up key
+  CLR_TEXT = $00F4F2F2;  // #F2F2F4
+  CLR_DIM = $00A69A9A;  // #9A9AA6
+  CLR_ACCENT = $00457AFF;  // #FF7A45
 
   FLIP_MS = 300;
   FLIP_STAGGER_MS = 130;
@@ -429,7 +419,7 @@ const
   LEVEL_NAMES: array[MIN_WORD_LEN..MAX_WORD_LEN] of string =
     ('Easy', 'Medium', 'Normal', 'Hard', 'Expert', 'Master', 'Insane');
 
-  TIMER_PRESETS: array[0..4] of Integer = (60, 120, 180, 300, 600);
+  TIMER_PRESETS: array[0..4] of integer = (60, 120, 180, 300, 600);
 
   { Guessing any of these sets off the toilet. }
   POOP_WORDS: array[0..201] of string = (
@@ -473,7 +463,7 @@ const
     'GROSS', 'GROSSER', 'GROSSEST', 'YUCKY', 'ICKY',
     { house words - see EXTRA_WORDS }
     'DOODOO', 'DOODIE', 'DOOKIE', 'CACA', 'PEEPEE', 'WEEWEE', 'TUSHY'
-  );
+    );
 
   POOP_GLYPHS: array[0..6] of string = ('💩', '💨', '🧻', '🚽', '😖', '🤢', '💥');
   VORTEX_GLYPHS: array[0..3] of string = ('💩', '🧻', '💨', '💩');
@@ -487,7 +477,7 @@ const
     '💩 Ker-plunk! What a potty word!',
     '🧻 Somebody grab the toilet paper!',
     '😖 PEE-YEW! What a smell!'
-  );
+    );
 
   WIN_SOUNDS: array[0..2] of string = ('win1.wav', 'win2.wav', 'win3.wav');
   LOSE_SOUNDS: array[0..4] of string =
@@ -502,13 +492,13 @@ const
     'win1.wav', 'win2.wav', 'win3.wav',
     'lose1.wav', 'lose2.wav', 'lose3.wav', 'poop1.wav', 'poop2.wav');
 
-{ ------------------------------------------------------------------ }
-{ Small helpers                                                       }
-{ ------------------------------------------------------------------ }
+  { ------------------------------------------------------------------ }
+  { Small helpers                                                       }
+  { ------------------------------------------------------------------ }
 
-function Shade(Col: TColor; Amount: Integer): TColor;
+function Shade(Col: TColor; Amount: integer): TColor;
 var
-  R, G, B: Integer;
+  R, G, B: integer;
 begin
   Col := ColorToRGB(Col);
   R := EnsureRange((Col and $FF) + Amount, 0, 255);
@@ -522,13 +512,13 @@ end;
   Canvas.RoundRect under LCL-gtk3 leaves the cairo path open, so consecutive
   calls get joined by stray diagonals across the board. One Polygon per tile
   side-steps that and looks the same. }
-procedure RoundBox(C: TCanvas; const R: TRect; Radius: Integer; Fill, Border: TColor);
+procedure RoundBox(C: TCanvas; const R: TRect; Radius: integer; Fill, Border: TColor);
 const
   STEPS = 5;                       // segments per corner
 var
   Pts: array[0..4 * (STEPS + 1) - 1] of TPoint;
-  Corner, I, K, Rad, CenterX, CenterY: Integer;
-  Start, Angle: Double;
+  Corner, I, K, Rad, CenterX, CenterY: integer;
+  Start, Angle: double;
 begin
   Rad := EnsureRange(Radius, 0, Min(R.Right - R.Left, R.Bottom - R.Top) div 2);
 
@@ -536,11 +526,27 @@ begin
   for Corner := 0 to 3 do
   begin
     case Corner of
-      0: begin CenterX := R.Left + Rad;      CenterY := R.Top + Rad;         Start := Pi;       end;
-      1: begin CenterX := R.Right - 1 - Rad; CenterY := R.Top + Rad;         Start := 1.5 * Pi; end;
-      2: begin CenterX := R.Right - 1 - Rad; CenterY := R.Bottom - 1 - Rad;  Start := 0;        end;
-    else
-         begin CenterX := R.Left + Rad;      CenterY := R.Bottom - 1 - Rad;  Start := 0.5 * Pi; end;
+      0: begin
+        CenterX := R.Left + Rad;
+        CenterY := R.Top + Rad;
+        Start := Pi;
+      end;
+      1: begin
+        CenterX := R.Right - 1 - Rad;
+        CenterY := R.Top + Rad;
+        Start := 1.5 * Pi;
+      end;
+      2: begin
+        CenterX := R.Right - 1 - Rad;
+        CenterY := R.Bottom - 1 - Rad;
+        Start := 0;
+      end;
+      else
+      begin
+        CenterX := R.Left + Rad;
+        CenterY := R.Bottom - 1 - Rad;
+        Start := 0.5 * Pi;
+      end;
     end;
     for I := 0 to STEPS do
     begin
@@ -562,10 +568,9 @@ begin
   C.Polygon(Pts);
 end;
 
-procedure CenterText(C: TCanvas; const R: TRect; const S: string;
-  FontHeight: Integer; Col: TColor; Bold: Boolean);
+procedure CenterText(C: TCanvas; const R: TRect; const S: string; FontHeight: integer; Col: TColor; Bold: boolean);
 var
-  TW, TH: Integer;
+  TW, TH: integer;
 begin
   if S = '' then
     Exit;
@@ -579,16 +584,15 @@ begin
   TW := C.TextWidth(S);
   TH := C.TextHeight(S);
   C.TextOut(R.Left + (R.Right - R.Left - TW) div 2,
-            R.Top + (R.Bottom - R.Top - TH) div 2, S);
+    R.Top + (R.Bottom - R.Top - TH) div 2, S);
   C.Brush.Style := bsSolid;
 end;
 
 { Largest font, from StartPx down to MinPx, at which S fits in MaxW. Leaves
   the canvas set to it and returns the (negative) font height. }
-function FitFont(C: TCanvas; const S: string; MaxW, StartPx, MinPx: Integer;
-  Bold: Boolean): Integer;
+function FitFont(C: TCanvas; const S: string; MaxW, StartPx, MinPx: integer; Bold: boolean): integer;
 var
-  Px: Integer;
+  Px: integer;
 begin
   if Bold then
     C.Font.Style := [fsBold]
@@ -609,23 +613,23 @@ begin
   case St of
     tsCorrect: Result := CLR_CORRECT;
     tsPresent: Result := CLR_PRESENT;
-    tsAbsent:  Result := CLR_ABSENT;
-  else
-    Result := CLR_TILE_BG;
+    tsAbsent: Result := CLR_ABSENT;
+    else
+      Result := CLR_TILE_BG;
   end;
 end;
 
 function TileBorder(St: TTileState): TColor;
 begin
   case St of
-    tsEmpty:  Result := CLR_TILE_EDGE;
+    tsEmpty: Result := CLR_TILE_EDGE;
     tsFilled: Result := CLR_TILE_EDGE_HI;
-  else
-    Result := Shade(TileFill(St), 14);
+    else
+      Result := Shade(TileFill(St), 14);
   end;
 end;
 
-function FormatSecs(Secs: Integer): string;
+function FormatSecs(Secs: integer): string;
 begin
   if Secs < 0 then
     Secs := 0;
@@ -633,15 +637,15 @@ begin
 end;
 
 { Hourglass length when the timer follows the level: 30s per letter plus one. }
-function LevelSecs(Len: Integer): Integer;
+function LevelSecs(Len: integer): integer;
 begin
   Result := EnsureRange(30 * (Len + 1), 60, 900);
 end;
 
 { "90" -> 90, "2:30" -> 150, anything else -> -1. }
-function ParseClock(const S: string): Integer;
+function ParseClock(const S: string): integer;
 var
-  P, M, Sec: Integer;
+  P, M, Sec: integer;
 begin
   P := Pos(':', S);
   if P = 0 then
@@ -655,7 +659,7 @@ end;
 
 procedure AddInfo(var R: TDefResult; const APart: string; const ALines: array of string);
 var
-  N, I: Integer;
+  N, I: integer;
 begin
   N := Length(R.Entries);
   SetLength(R.Entries, N + 1);
@@ -674,7 +678,7 @@ const
   CANDIDATES: array[0..2] of string = ('paplay', 'pw-play', 'aplay');
   {$ENDIF}
 var
-  I: Integer;
+  I: integer;
   SearchPath: string;
 begin
   SearchPath := GetEnvironmentVariable('PATH');
@@ -785,7 +789,7 @@ begin
     reuses them, and the OS owns cleaning its temp space. }
 end;
 
-function TForm1.MaxGuessesFor(WordLength: Integer): Integer;
+function TForm1.MaxGuessesFor(WordLength: integer): integer;
 begin
   // One more try for each extra letter.
   Result := EnsureRange(WordLength + 1, 4, 10);
@@ -800,7 +804,7 @@ end;
   mid-resize is what makes tiles drift between games. }
 procedure TForm1.ComputeBoardMetrics;
 var
-  AvailW, AvailH, SizeW, SizeH: Integer;
+  AvailW, AvailH, SizeW, SizeH: integer;
 begin
   FTileSize := 0;
   if (FWordLength <= 0) or (FMaxGuesses <= 0) then
@@ -831,7 +835,7 @@ begin
   FBoardY := (PaintBoxBoard.Height - FBoardH) div 2;
 end;
 
-function TForm1.TileRect(Row, Col: Integer): TRect;
+function TForm1.TileRect(Row, Col: integer): TRect;
 begin
   Result.Left := FBoardX + Col * (FTileSize + FTileGap);
   Result.Top := FBoardY + Row * (FTileSize + FTileGap);
@@ -839,7 +843,7 @@ begin
   Result.Bottom := Result.Top + FTileSize;
 end;
 
-function TForm1.RowAtPoint(X, Y: Integer): Integer;
+function TForm1.RowAtPoint(X, Y: integer): integer;
 begin
   Result := -1;
   if FTileSize <= 0 then
@@ -851,24 +855,26 @@ begin
     Result := -1;
 end;
 
-procedure TForm1.DrawTile(C: TCanvas; Row, Col: Integer);
+procedure TForm1.DrawTile(C: TCanvas; Row, Col: integer);
 var
   R: TRect;
   T: TTileInfo;
   St: TTileState;
-  Elapsed: Int64;
-  P, ScaleX, ScaleY: Double;
-  CX, CY, HalfW, HalfH, DX, DY: Integer;
+  Elapsed: int64;
+  P, ScaleX, ScaleY: double;
+  CX, CY, HalfW, HalfH, DX, DY: integer;
 begin
   T := FTiles[Row, Col];
   R := TileRect(Row, Col);
   St := T.State;
-  ScaleX := 1; ScaleY := 1;
-  DX := FQuakeDX; DY := FQuakeDY;
+  ScaleX := 1;
+  ScaleY := 1;
+  DX := FQuakeDX;
+  DY := FQuakeDY;
 
   if T.Anim <> akNone then
   begin
-    Elapsed := Int64(GetTickCount64) - Int64(T.T0);
+    Elapsed := int64(GetTickCount64) - int64(T.T0);
     if Elapsed < 0 then
       Elapsed := 0;                      // staggered start not reached yet
     if T.Dur <= 0 then
@@ -878,10 +884,10 @@ begin
 
     case T.Anim of
       akPop:
-        begin
-          ScaleX := 1 + 0.18 * Sin(P * Pi);
-          ScaleY := ScaleX;
-        end;
+      begin
+        ScaleX := 1 + 0.18 * Sin(P * Pi);
+        ScaleY := ScaleX;
+      end;
       akFlip:
         // Squash to nothing showing the old color, spring back with the new.
         if P < 0.5 then
@@ -892,11 +898,11 @@ begin
           ScaleY := 0.04 + 1.92 * (P - 0.5);
         end;
       akBounce:
-        begin
-          Dec(DY, Round(Sin(P * Pi) * FTileSize * 0.45));
-          ScaleX := 1 + 0.10 * Sin(P * Pi);
-          ScaleY := ScaleX;
-        end;
+      begin
+        Dec(DY, Round(Sin(P * Pi) * FTileSize * 0.45));
+        ScaleX := 1 + 0.10 * Sin(P * Pi);
+        ScaleY := ScaleX;
+      end;
       else
         ;
     end;
@@ -921,7 +927,7 @@ end;
 
 procedure TForm1.DrawParticles(C: TCanvas);
 var
-  I, X, Y: Integer;
+  I, X, Y: integer;
 begin
   C.Brush.Style := bsClear;
   for I := 0 to High(FParticles) do
@@ -950,9 +956,9 @@ end;
 
 { Where the giant toilet is: rises from the bottom, sits there shuddering
   while everything spirals into it, then blasts off out of the top. }
-procedure TForm1.ToiletPose(Elapsed: Int64; out X, Y, Size: Double);
+procedure TForm1.ToiletPose(Elapsed: int64; out X, Y, Size: double);
 var
-  RestY, P: Double;
+  RestY, P: double;
 begin
   Size := Min(PaintBoxBoard.Width, PaintBoxBoard.Height) * 0.30;
   if Size < 60 then Size := 60;
@@ -981,12 +987,12 @@ procedure TForm1.DrawToilet(C: TCanvas);
 const
   GLYPH = '🚽';
 var
-  X, Y, Size: Double;
-  TW, TH: Integer;
+  X, Y, Size: double;
+  TW, TH: integer;
 begin
   if not FToiletOn then
     Exit;
-  ToiletPose(Int64(GetTickCount64 - FToiletT0), X, Y, Size);
+  ToiletPose(int64(GetTickCount64 - FToiletT0), X, Y, Size);
   C.Brush.Style := bsClear;
   C.Font.Style := [];
   C.Font.Height := -Round(Size);
@@ -999,23 +1005,21 @@ end;
 procedure TForm1.DrawEndBanner(C: TCanvas);
 var
   R, Line: TRect;
-  W, H, FontH: Integer;
+  W, H, FontH: integer;
   Title, Sub: string;
 begin
   // Sit low in the board so that on a quick win the banner covers the rows
   // that were never used rather than the guesses the player wants to see.
   W := Min(PaintBoxBoard.Width - 40, 440);
   H := 116;
-  R := Rect((PaintBoxBoard.Width - W) div 2, PaintBoxBoard.Height - H - 12,
-            (PaintBoxBoard.Width + W) div 2, PaintBoxBoard.Height - 12);
+  R := Rect((PaintBoxBoard.Width - W) div 2, PaintBoxBoard.Height - H - 12, (PaintBoxBoard.Width + W) div 2, PaintBoxBoard.Height - 12);
 
   RoundBox(C, R, 16, CLR_PANEL, CLR_TILE_EDGE_HI);
 
   if FPhase = gpWon then
   begin
     Title := '🎉  NAILED IT!';
-    Sub := Format('%s in %d %s', [FTargetWord, FCurrentRow + 1,
-      specialize IfThen<string>(FCurrentRow = 0, 'try', 'tries')]);
+    Sub := Format('%s in %d %s', [FTargetWord, FCurrentRow + 1, specialize IfThen<string>(FCurrentRow = 0, 'try', 'tries')]);
   end
   else
   begin
@@ -1042,7 +1046,7 @@ end;
 procedure TForm1.PaintBoxBoardPaint(Sender: TObject);
 var
   C: TCanvas;
-  Row, Col: Integer;
+  Row, Col: integer;
 begin
   C := PaintBoxBoard.Canvas;
   C.Brush.Style := bsSolid;
@@ -1070,8 +1074,7 @@ begin
     DrawMenu(C);
 end;
 
-procedure TForm1.PaintBoxBoardMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxBoardMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   if IgnoreMouse or (Button <> mbLeft) then
     Exit;
@@ -1084,11 +1087,10 @@ begin
   TimerHold.Enabled := FHoldArmed;
 end;
 
-procedure TForm1.PaintBoxBoardMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+procedure TForm1.PaintBoxBoardMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
-  Hot: Integer;
-  Hand: Boolean;
+  Hot: integer;
+  Hand: boolean;
 begin
   if IgnoreMouse then
     Exit;
@@ -1117,8 +1119,7 @@ begin
     PaintBoxBoard.Cursor := crDefault;
 end;
 
-procedure TForm1.PaintBoxBoardMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxBoardMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   if IgnoreMouse then
     Exit;
@@ -1141,9 +1142,9 @@ begin
   BoardClick(X, Y);
 end;
 
-procedure TForm1.BoardClick(X, Y: Integer);
+procedure TForm1.BoardClick(X, Y: integer);
 var
-  I: Integer;
+  I: integer;
 begin
   if FMenuOpen then
   begin
@@ -1197,9 +1198,9 @@ end;
 { On-screen keyboard                                                  }
 { ------------------------------------------------------------------ }
 
-procedure TForm1.AddKey(const R: TRect; Kind: TKeyKind; Ch: Char; const ALabel: string);
+procedure TForm1.AddKey(const R: TRect; Kind: TKeyKind; Ch: char; const ALabel: string);
 var
-  N: Integer;
+  N: integer;
 begin
   N := Length(FKeys);
   SetLength(FKeys, N + 1);
@@ -1216,10 +1217,10 @@ end;
 procedure TForm1.LayoutKeys;
 const
   Rows: array[0..2] of string = ('QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM');
-  Stagger: array[0..2] of Double = (0, 0.5, 1.5);   // in key widths
+  Stagger: array[0..2] of double = (0, 0.5, 1.5);   // in key widths
 var
-  W, H, Gap, KeyW, KeyH, SpecW, SplitGap, BlockW, BlockX, SpecX: Integer;
-  X, Y, R, I, N: Integer;
+  W, H, Gap, KeyW, KeyH, SpecW, SplitGap, BlockW, BlockX, SpecX: integer;
+  X, Y, R, I, N: integer;
   EnterText: string;
 begin
   SetLength(FKeys, 0);
@@ -1268,9 +1269,9 @@ begin
   end;
 end;
 
-function TForm1.KeyAtPoint(X, Y: Integer): Integer;
+function TForm1.KeyAtPoint(X, Y: integer): integer;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(FKeys) do
     if PtInRect(FKeys[I].Bounds, Point(X, Y)) then
@@ -1278,9 +1279,9 @@ begin
   Result := -1;
 end;
 
-function TForm1.KeyIndexOf(Kind: TKeyKind; Ch: Char): Integer;
+function TForm1.KeyIndexOf(Kind: TKeyKind; Ch: char): integer;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(FKeys) do
     if (FKeys[I].Kind = Kind) and ((Kind <> kkLetter) or (FKeys[I].Ch = Ch)) then
@@ -1290,12 +1291,11 @@ end;
 
 { The secret cheat: hold Shift and hover the BACK key to peek at the answer.
   Nothing hints that it exists, which is the point. }
-procedure TForm1.UpdateCheatHint(KeyIndex: Integer; Shift: TShiftState);
+procedure TForm1.UpdateCheatHint(KeyIndex: integer; Shift: TShiftState);
 var
   Want: string;
 begin
-  if FDebugMode and (ssShift in Shift) and (FTargetWord <> '') and
-     (KeyIndex >= 0) and (FKeys[KeyIndex].Kind = kkBack) then
+  if FDebugMode and (ssShift in Shift) and (FTargetWord <> '') and (KeyIndex >= 0) and (FKeys[KeyIndex].Kind = kkBack) then
     Want := '🤫 Answer: ' + FTargetWord
   else
     Want := '';
@@ -1312,13 +1312,13 @@ begin
     Application.ActivateHint(Mouse.CursorPos);
 end;
 
-procedure TForm1.DrawKey(C: TCanvas; Index: Integer);
+procedure TForm1.DrawKey(C: TCanvas; Index: integer);
 var
   K: TKeyInfo;
   R: TRect;
   Fill, Txt: TColor;
-  Grow: Integer;
-  FontH: Integer;
+  Grow: integer;
+  FontH: integer;
 begin
   K := FKeys[Index];
   R := K.Bounds;
@@ -1329,9 +1329,12 @@ begin
     case FKeyState[K.Ch] of
       tsCorrect: Fill := CLR_CORRECT;
       tsPresent: Fill := CLR_PRESENT;
-      tsAbsent:  begin Fill := CLR_KEY_DEAD; Txt := CLR_DIM; end;
-    else
-      Fill := CLR_KEY;
+      tsAbsent: begin
+        Fill := CLR_KEY_DEAD;
+        Txt := CLR_DIM;
+      end;
+      else
+        Fill := CLR_KEY;
     end;
   end
   else
@@ -1358,11 +1361,9 @@ begin
     height alone overflows the sides as soon as the keys are narrow, which is
     exactly what happens on a phone. }
   if Length(K.Text) > 1 then
-    FontH := -Max(8, Min((R.Bottom - R.Top) * 40 div 100,
-                         (R.Right - R.Left) * 2 div (Length(K.Text) + 1)))
+    FontH := -Max(8, Min((R.Bottom - R.Top) * 40 div 100, (R.Right - R.Left) * 2 div (Length(K.Text) + 1)))
   else
-    FontH := -Max(9, Min((R.Bottom - R.Top) * 50 div 100,
-                         (R.Right - R.Left) * 62 div 100));
+    FontH := -Max(9, Min((R.Bottom - R.Top) * 50 div 100, (R.Right - R.Left) * 62 div 100));
   // ...and never let a word run past the edges of its key.
   C.Font.Style := [fsBold];
   C.Font.Height := FontH;
@@ -1377,7 +1378,7 @@ end;
 procedure TForm1.PaintBoxKeysPaint(Sender: TObject);
 var
   C: TCanvas;
-  I: Integer;
+  I: integer;
 begin
   C := PaintBoxKeys.Canvas;
   C.Brush.Style := bsSolid;
@@ -1391,10 +1392,9 @@ begin
   FKeysDirty := False;
 end;
 
-procedure TForm1.PaintBoxKeysMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+procedure TForm1.PaintBoxKeysMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
-  Hit: Integer;
+  Hit: integer;
 begin
   if IgnoreMouse then
     Exit;
@@ -1424,8 +1424,7 @@ begin
   end;
 end;
 
-procedure TForm1.PaintBoxKeysMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxKeysMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   if IgnoreMouse or (Button <> mbLeft) then
     Exit;
@@ -1436,10 +1435,9 @@ begin
     PaintBoxKeys.Invalidate;
 end;
 
-procedure TForm1.PaintBoxKeysMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxKeysMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
-  Hit: Integer;
+  Hit: integer;
 begin
   if IgnoreMouse or (Button <> mbLeft) then
     Exit;
@@ -1467,8 +1465,8 @@ begin
     else
       case FKeys[Hit].Kind of
         kkLetter: TypeLetter(FKeys[Hit].Ch);
-        kkEnter:  PressEnter;
-        kkBack:   PressBack;
+        kkEnter: PressEnter;
+        kkBack: PressBack;
       end;
   end;
   FPressedKey := -1;
@@ -1479,19 +1477,19 @@ end;
 { Top bar                                                             }
 { ------------------------------------------------------------------ }
 
-function TForm1.TimerCaption(Compact: Boolean): string;
+function TForm1.TimerCaption(Compact: boolean): string;
 begin
   if Compact then
     Exit('⏳');
   case FTimerMode of
-    tmOff:   Result := '⏳ Timer';
+    tmOff: Result := '⏳ Timer';
     tmLevel: Result := '⏳ By level';
-  else
-    Result := '⏳ ' + FormatSecs(FTimerSecs);
+    else
+      Result := '⏳ ' + FormatSecs(FTimerSecs);
   end;
 end;
 
-function TForm1.ScoreText(Compact: Boolean): string;
+function TForm1.ScoreText(Compact: boolean): string;
 begin
   if FTotalGames = 0 then
     Exit('0 / 0');
@@ -1501,12 +1499,12 @@ begin
     Result := Format('%d / %d  ·  %.0f%%', [FWins, FTotalGames, FWins / FTotalGames * 100]);
 end;
 
-function TForm1.TimerShowing: Boolean;
+function TForm1.TimerShowing: boolean;
 begin
   Result := FTimeTotalMs > 0;
 end;
 
-function TForm1.BarRightWidth(C: TCanvas; Compact, HideScore: Boolean): Integer;
+function TForm1.BarRightWidth(C: TCanvas; Compact, HideScore: boolean): integer;
 begin
   C.Font.Height := -14;
   C.Font.Style := [fsBold];
@@ -1525,12 +1523,12 @@ const
   MARGIN = 8;
   BTN_H = 36;
 var
-  Acts: array[0..4] of Integer;
+  Acts: array[0..4] of integer;
   Caps: array[0..4] of string;
-  I, N, X, BtnTop, Pad, MinW, Gap, Step: Integer;
-  DropLookup: Boolean;
+  I, N, X, BtnTop, Pad, MinW, Gap, Step: integer;
+  DropLookup: boolean;
 
-  procedure Fill(Compact: Boolean);
+  procedure Fill(Compact: boolean);
   begin
     if Compact then
     begin
@@ -1549,14 +1547,14 @@ var
     Caps[4] := '☰';
   end;
 
-  function ButtonW(const S: string): Integer;
+  function ButtonW(const S: string): integer;
   begin
     Result := Max(MinW, C.TextWidth(S) + 2 * Pad);
   end;
 
-  function Needed: Integer;
+  function Needed: integer;
   var
-    J: Integer;
+    J: integer;
   begin
     Result := BarRightWidth(C, FBarCompact, FBarHideScore) + MARGIN;
     for J := 0 to 4 do
@@ -1579,11 +1577,15 @@ begin
     DropLookup := Step >= 2;
     if Step >= 3 then
     begin
-      Pad := 7; MinW := 34; Gap := 4;
+      Pad := 7;
+      MinW := 34;
+      Gap := 4;
     end
     else
     begin
-      Pad := 12; MinW := 40; Gap := 6;
+      Pad := 12;
+      MinW := 40;
+      Gap := 6;
     end;
     FBarHideScore := Step >= 4;
     Fill(FBarCompact);
@@ -1609,7 +1611,7 @@ begin
   end;
 end;
 
-procedure TForm1.DrawBarButton(C: TCanvas; Index: Integer);
+procedure TForm1.DrawBarButton(C: TCanvas; Index: integer);
 var
   B: TBarButton;
   Fill, Edge: TColor;
@@ -1640,9 +1642,9 @@ end;
 
 { Sand runs from top to bottom as the clock goes. The bulbs are triangles, so
   the sand's height goes with the square root of how much of it there is. }
-procedure TForm1.DrawHourglass(C: TCanvas; const R: TRect; Frac: Double; Running: Boolean);
+procedure TForm1.DrawHourglass(C: TCanvas; const R: TRect; Frac: double; Running: boolean);
 var
-  GX, GTop, GBot, GMid, HW, BulbH, HS, WS, HF, WF: Integer;
+  GX, GTop, GBot, GMid, HW, BulbH, HS, WS, HF, WF: integer;
   Sand: TColor;
 begin
   GX := (R.Left + R.Right) div 2;
@@ -1668,8 +1670,7 @@ begin
   C.Pen.Color := CLR_DIM;
   C.Brush.Style := bsSolid;
   C.Brush.Color := CLR_BG;
-  C.Polygon([Point(GX - HW, GTop), Point(GX + HW, GTop), Point(GX + 2, GMid),
-             Point(GX + HW, GBot), Point(GX - HW, GBot), Point(GX - 2, GMid)]);
+  C.Polygon([Point(GX - HW, GTop), Point(GX + HW, GTop), Point(GX + 2, GMid), Point(GX + HW, GBot), Point(GX - HW, GBot), Point(GX - 2, GMid)]);
 
   C.Pen.Color := Sand;
   C.Brush.Color := Sand;
@@ -1685,8 +1686,7 @@ begin
   if HF > 0 then
   begin
     WF := Round((HW - 2) * (1 - HF / BulbH));
-    C.Polygon([Point(GX - HW + 2, GBot - 1), Point(GX + HW - 2, GBot - 1),
-               Point(GX + WF, GBot - HF), Point(GX - WF, GBot - HF)]);
+    C.Polygon([Point(GX - HW + 2, GBot - 1), Point(GX + HW - 2, GBot - 1), Point(GX + WF, GBot - HF), Point(GX - WF, GBot - HF)]);
   end;
 
   if Running and (Frac > 0) and (Frac < 1) then
@@ -1698,9 +1698,9 @@ end;
 
 procedure TForm1.DrawBarRight(C: TCanvas);
 var
-  X, MidY: Integer;
+  X, MidY: integer;
   S: string;
-  Frac: Double;
+  Frac: double;
 begin
   C.Font.Height := -14;
   C.Font.Style := [fsBold];
@@ -1723,7 +1723,7 @@ begin
     if Frac < 0 then Frac := 0;
     if Frac > 1 then Frac := 1;
 
-    S := FormatSecs(Integer((FTimeLeftMs + 999) div 1000));
+    S := FormatSecs(integer((FTimeLeftMs + 999) div 1000));
     Dec(X, C.TextWidth(S));
     if Frac < 0.2 then
       C.Font.Color := CLR_ACCENT
@@ -1742,7 +1742,7 @@ end;
 procedure TForm1.PaintBoxBarPaint(Sender: TObject);
 var
   C: TCanvas;
-  I: Integer;
+  I: integer;
 begin
   C := PaintBoxBar.Canvas;
   C.Brush.Style := bsSolid;
@@ -1755,9 +1755,9 @@ begin
   DrawBarRight(C);
 end;
 
-function TForm1.BarButtonAt(X, Y: Integer): Integer;
+function TForm1.BarButtonAt(X, Y: integer): integer;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(FBarButtons) do
     if PtInRect(FBarButtons[I].Bounds, Point(X, Y)) then
@@ -1765,8 +1765,7 @@ begin
   Result := -1;
 end;
 
-procedure TForm1.PaintBoxBarMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   if IgnoreMouse or (Button <> mbLeft) then
     Exit;
@@ -1774,10 +1773,9 @@ begin
   PaintBoxBar.Invalidate;
 end;
 
-procedure TForm1.PaintBoxBarMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+procedure TForm1.PaintBoxBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var
-  Hit: Integer;
+  Hit: integer;
 begin
   if IgnoreMouse then
     Exit;
@@ -1793,10 +1791,9 @@ begin
   end;
 end;
 
-procedure TForm1.PaintBoxBarMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.PaintBoxBarMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
-  Hit: Integer;
+  Hit: integer;
 begin
   if IgnoreMouse or (Button <> mbLeft) then
     Exit;
@@ -1819,9 +1816,9 @@ begin
   end;
 end;
 
-procedure TForm1.BarClick(Index: Integer);
+procedure TForm1.BarClick(Index: integer);
 var
-  A: Integer;
+  A: integer;
 begin
   if FPromptOpen then
     Exit;                // finish or cancel the prompt first
@@ -1849,10 +1846,9 @@ begin
   SetLength(FMenuItems, 0);
 end;
 
-procedure TForm1.AddMenuItem(const ACaption: string; AAction: Integer;
-  AEnabled: Boolean; AChecked: Boolean; const AShortcut: string);
+procedure TForm1.AddMenuItem(const ACaption: string; AAction: integer; AEnabled: boolean; AChecked: boolean; const AShortcut: string);
 var
-  N: Integer;
+  N: integer;
 begin
   N := Length(FMenuItems);
   SetLength(FMenuItems, N + 1);
@@ -1866,7 +1862,7 @@ end;
 
 procedure TForm1.AddMenuSep;
 var
-  N: Integer;
+  N: integer;
 begin
   N := Length(FMenuItems);
   SetLength(FMenuItems, N + 1);
@@ -1874,7 +1870,7 @@ begin
   FMenuItems[N].Separator := True;
 end;
 
-procedure TForm1.ShowMenu(ASource, AX, AY: Integer);
+procedure TForm1.ShowMenu(ASource, AX, AY: integer);
 begin
   if FCardVisible then
     CloseCard;
@@ -1896,73 +1892,70 @@ begin
   PaintBoxBar.Invalidate;
 end;
 
-procedure TForm1.OpenBarMenu(AMenu, AX: Integer);
+procedure TForm1.OpenBarMenu(AMenu, AX: integer);
 var
-  L, I: Integer;
-  OnPreset: Boolean;
+  L, I: integer;
+  OnPreset: boolean;
 begin
   ClearMenu;
   case AMenu of
     MENU_LEVEL:
       for L := MIN_WORD_LEN to MAX_WORD_LEN do
-        AddMenuItem(Format('%s  ·  %d letters, %d tries',
-          [LEVEL_NAMES[L], L, MaxGuessesFor(L)]), ACT_LEVEL + L, True, L = FDifficulty);
+        AddMenuItem(Format('%s  ·  %d letters, %d tries', [LEVEL_NAMES[L], L, MaxGuessesFor(L)]), ACT_LEVEL + L, True, L = FDifficulty);
 
     MENU_TIMER:
+    begin
+      AddMenuItem('No timer', ACT_TIMER_OFF, True, FTimerMode = tmOff);
+      AddMenuItem(Format('By level  ·  %s for %d letters', [FormatSecs(LevelSecs(FDifficulty)), FDifficulty]),
+        ACT_TIMER_LEVEL, True, FTimerMode = tmLevel);
+      AddMenuSep;
+      OnPreset := False;
+      for I := 0 to High(TIMER_PRESETS) do
       begin
-        AddMenuItem('No timer', ACT_TIMER_OFF, True, FTimerMode = tmOff);
-        AddMenuItem(Format('By level  ·  %s for %d letters',
-          [FormatSecs(LevelSecs(FDifficulty)), FDifficulty]),
-          ACT_TIMER_LEVEL, True, FTimerMode = tmLevel);
-        AddMenuSep;
-        OnPreset := False;
-        for I := 0 to High(TIMER_PRESETS) do
-        begin
-          AddMenuItem(Format('%d minute%s', [TIMER_PRESETS[I] div 60,
-            specialize IfThen<string>(TIMER_PRESETS[I] = 60, '', 's')]),
-            ACT_TIMER_SECS + TIMER_PRESETS[I], True,
-            (FTimerMode = tmFixed) and (FTimerSecs = TIMER_PRESETS[I]));
-          if (FTimerMode = tmFixed) and (FTimerSecs = TIMER_PRESETS[I]) then
-            OnPreset := True;
-        end;
-        AddMenuSep;
-        if (FTimerMode = tmFixed) and not OnPreset then
-          AddMenuItem(Format('Custom  ·  %s...', [FormatSecs(FTimerSecs)]),
-            ACT_TIMER_CUSTOM, True, True)
-        else
-          AddMenuItem('Custom time...', ACT_TIMER_CUSTOM);
+        AddMenuItem(Format('%d minute%s', [TIMER_PRESETS[I] div 60, specialize IfThen<string>(TIMER_PRESETS[I] = 60, '', 's')]),
+          ACT_TIMER_SECS + TIMER_PRESETS[I], True,
+          (FTimerMode = tmFixed) and (FTimerSecs = TIMER_PRESETS[I]));
+        if (FTimerMode = tmFixed) and (FTimerSecs = TIMER_PRESETS[I]) then
+          OnPreset := True;
       end;
+      AddMenuSep;
+      if (FTimerMode = tmFixed) and not OnPreset then
+        AddMenuItem(Format('Custom  ·  %s...', [FormatSecs(FTimerSecs)]),
+          ACT_TIMER_CUSTOM, True, True)
+      else
+        AddMenuItem('Custom time...', ACT_TIMER_CUSTOM);
+    end;
 
     MENU_MORE:
-      begin
-        AddMenuItem('Your own secret word...', ACT_CUSTOM_WORD, True, False, 'Ctrl+M');
-        AddMenuItem('Look up any word...', ACT_LOOKUP_ANY, True, False, 'Ctrl+L');
-        AddMenuItem('Give up', ACT_GIVE_UP, FPhase = gpPlaying);
-        AddMenuSep;
-        AddMenuItem('Sound effects', ACT_SOUND, True, FSoundOn);
-        AddMenuItem('Key click sounds', ACT_CLICKS, FSoundOn, FClicksOn);
-        AddMenuSep;
-        AddMenuSep;
-        if FPlayerName <> '' then
-          AddMenuItem(Format('Player · %s...', [FPlayerName]), ACT_FAMILY_NAME)
-        else
-          AddMenuItem('Player name...', ACT_FAMILY_NAME);
-        AddMenuItem('Family passphrase...', ACT_FAMILY_PASS);
-        AddMenuItem(Format('Server port · %d...', [FFamilyPort]),
-          ACT_FAMILY_PORT, FServer = nil);
-        AddMenuItem('Run family server', ACT_FAMILY_SERVER, True, FServer <> nil);
-        AddMenuItem('Leaderboard', ACT_FAMILY_BOARD);
-        AddMenuSep;
-        AddMenuItem('How to play', ACT_HELP, True, False, 'F1');
-        AddMenuItem('About', ACT_ABOUT);
-        AddMenuItem('Quit', ACT_QUIT);
-      end;
+    begin
+      AddMenuItem('Your own secret word...', ACT_CUSTOM_WORD, True, False, 'Ctrl+M');
+      AddMenuItem('Look up any word...', ACT_LOOKUP_ANY, True, False, 'Ctrl+L');
+      AddMenuItem('Give up', ACT_GIVE_UP, FPhase = gpPlaying);
+      AddMenuSep;
+      AddMenuItem('Sound effects', ACT_SOUND, True, FSoundOn);
+      AddMenuItem('Key click sounds', ACT_CLICKS, FSoundOn, FClicksOn);
+      AddMenuSep;
+      AddMenuSep;
+      if FPlayerName <> '' then
+        AddMenuItem(Format('Player · %s...', [FPlayerName]), ACT_FAMILY_NAME)
+      else
+        AddMenuItem('Player name...', ACT_FAMILY_NAME);
+      AddMenuItem('Family passphrase...', ACT_FAMILY_PASS);
+      AddMenuItem(Format('Server port · %d...', [FFamilyPort]),
+        ACT_FAMILY_PORT, FServer = nil);
+      AddMenuItem('Run family server', ACT_FAMILY_SERVER, True, FServer <> nil);
+      AddMenuItem('Leaderboard', ACT_FAMILY_BOARD);
+      AddMenuSep;
+      AddMenuItem('How to play', ACT_HELP, True, False, 'F1');
+      AddMenuItem('About', ACT_ABOUT);
+      AddMenuItem('Quit', ACT_QUIT);
+    end;
   end;
   ShowMenu(AMenu, AX, 4);
 end;
 
 { The right-click / press-and-hold menu for a row. }
-procedure TForm1.OpenRowMenu(AX, AY: Integer);
+procedure TForm1.OpenRowMenu(AX, AY: integer);
 var
   W: string;
 begin
@@ -1988,7 +1981,7 @@ const
   PAD = 8;
   CHECK_W = 32;
 var
-  I, W, H, X, Y, IY, TW, TH: Integer;
+  I, W, H, X, Y, IY, TW, TH: integer;
   R: TRect;
 begin
   C.Font.Height := -15;
@@ -2071,27 +2064,28 @@ begin
   end;
 end;
 
-function TForm1.MenuItemAt(X, Y: Integer): Integer;
+function TForm1.MenuItemAt(X, Y: integer): integer;
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(FMenuItems) do
-    if (not FMenuItems[I].Separator) and FMenuItems[I].Enabled and
-       PtInRect(FMenuItems[I].Bounds, Point(X, Y)) then
+    if (not FMenuItems[I].Separator) and FMenuItems[I].Enabled and PtInRect(FMenuItems[I].Bounds, Point(X, Y)) then
       Exit(I);
   Result := -1;
 end;
 
-procedure TForm1.MoveMenuHot(Dir: Integer);
+procedure TForm1.MoveMenuHot(Dir: integer);
 var
-  N, I, Tries: Integer;
+  N, I, Tries: integer;
 begin
   N := Length(FMenuItems);
   if N = 0 then
     Exit;
   I := FMenuHot;
   if I < 0 then
-    if Dir > 0 then I := -1 else I := N;
+    if Dir > 0 then I := -1
+    else
+      I := N;
   for Tries := 1 to N do
   begin
     Inc(I, Dir);
@@ -2106,9 +2100,9 @@ begin
   end;
 end;
 
-procedure TForm1.ActivateMenuItem(Index: Integer);
+procedure TForm1.ActivateMenuItem(Index: integer);
 var
-  A: Integer;
+  A: integer;
 begin
   if (Index < 0) or (Index > High(FMenuItems)) then
     Exit;
@@ -2119,17 +2113,17 @@ begin
   RunAction(A);
 end;
 
-procedure TForm1.RunAction(Act: Integer);
+procedure TForm1.RunAction(Act: integer);
 begin
   case Act of
     ACT_NONE: ;
     ACT_NEW:
       StartNewGame(FDifficulty);
     ACT_LEVEL + MIN_WORD_LEN .. ACT_LEVEL + MAX_WORD_LEN:
-      begin
-        FDifficulty := Act - ACT_LEVEL;
-        StartNewGame(FDifficulty);
-      end;
+    begin
+      FDifficulty := Act - ACT_LEVEL;
+      StartNewGame(FDifficulty);
+    end;
     ACT_TIMER_OFF:
       SetTimerMode(tmOff, FTimerSecs);
     ACT_TIMER_LEVEL:
@@ -2171,9 +2165,9 @@ begin
       FClicksOn := not FClicksOn;
     ACT_QUIT:
       Close;
-  else
-    if Act >= ACT_TIMER_SECS then
-      SetTimerMode(tmFixed, Act - ACT_TIMER_SECS);
+    else
+      if Act >= ACT_TIMER_SECS then
+        SetTimerMode(tmFixed, Act - ACT_TIMER_SECS);
   end;
   PaintBoxBar.Invalidate;
 end;
@@ -2182,8 +2176,7 @@ end;
 { In-window text prompt                                               }
 { ------------------------------------------------------------------ }
 
-procedure TForm1.OpenPrompt(AKind: TPromptKind; AAction: Integer;
-  const ATitle, AHint, AInitial: string; AMaxLen: Integer);
+procedure TForm1.OpenPrompt(AKind: TPromptKind; AAction: integer; const ATitle, AHint, AInitial: string; AMaxLen: integer);
 begin
   CloseMenu;
   if FCardVisible then
@@ -2210,7 +2203,7 @@ begin
   PaintBoxBar.Invalidate;
 end;
 
-procedure TForm1.PromptType(Ch: Char);
+procedure TForm1.PromptType(Ch: char);
 begin
   case FPromptKind of
     prWord: if not (Ch in ['A'..'Z']) then Exit;
@@ -2246,83 +2239,83 @@ end;
 procedure TForm1.PromptAccept;
 var
   S: string;
-  Secs: Integer;
+  Secs: integer;
 begin
   S := Trim(FPromptText);
   case FPromptAction of
     ACT_CUSTOM_WORD, ACT_LOOKUP_ANY:
+    begin
+      if S = '' then
       begin
-        if S = '' then
-        begin
-          FPromptError := 'Type a word first';
-          PaintBoxBoard.Invalidate;
-          Exit;
-        end;
-        PlayClick('enter.wav');
-        ClosePrompt;
-        if FPromptAction = ACT_CUSTOM_WORD then
-          StartNewGame(Length(S), S)
-        else
-          StartLookup(S);
+        FPromptError := 'Type a word first';
+        PaintBoxBoard.Invalidate;
+        Exit;
       end;
+      PlayClick('enter.wav');
+      ClosePrompt;
+      if FPromptAction = ACT_CUSTOM_WORD then
+        StartNewGame(Length(S), S)
+      else
+        StartLookup(S);
+    end;
     ACT_TIMER_CUSTOM:
+    begin
+      Secs := ParseClock(S);
+      if Secs < 10 then
       begin
-        Secs := ParseClock(S);
-        if Secs < 10 then
-        begin
-          FPromptError := 'Try something like 90 or 2:30 (10 seconds or more)';
-          PaintBoxBoard.Invalidate;
-          Exit;
-        end;
-        PlayClick('enter.wav');
-        ClosePrompt;
-        SetTimerMode(tmFixed, Secs);
+        FPromptError := 'Try something like 90 or 2:30 (10 seconds or more)';
+        PaintBoxBoard.Invalidate;
+        Exit;
       end;
+      PlayClick('enter.wav');
+      ClosePrompt;
+      SetTimerMode(tmFixed, Secs);
+    end;
     ACT_FAMILY_NAME:
-      begin
-        FPlayerName := SanitizeName(S);
-        SaveFamilyConfig;
-        ClosePrompt;
-        if FPlayerName <> '' then
-          ShowStatus('Playing as ' + FPlayerName, TONE_GOOD)
-        else
-          ShowStatus('No player name - games will not be scored');
-      end;
+    begin
+      FPlayerName := SanitizeName(S);
+      SaveFamilyConfig;
+      ClosePrompt;
+      if FPlayerName <> '' then
+        ShowStatus('Playing as ' + FPlayerName, TONE_GOOD)
+      else
+        ShowStatus('No player name - games will not be scored');
+    end;
     ACT_FAMILY_PASS:
+    begin
+      if (S <> '') and (Length(S) < 4) then
       begin
-        if (S <> '') and (Length(S) < 4) then
-        begin
-          FPromptError := 'At least 4 characters';
-          PaintBoxBoard.Invalidate;
-          Exit;
-        end;
-        FFamilyPass := S;
-        ClosePrompt;
-        if FServer <> nil then
-        begin
-          // the running server keeps the old phrase until restarted
-          FreeAndNil(FServer);
-          if FFamilyPass <> '' then
-            StartFamilyServer;
-        end;
-        SaveFamilyConfig;
-        ShowStatus('Family passphrase set', TONE_GOOD);
+        FPromptError := 'At least 4 characters';
+        PaintBoxBoard.Invalidate;
+        Exit;
       end;
+      FFamilyPass := S;
+      ClosePrompt;
+      if FServer <> nil then
+      begin
+        // the running server keeps the old phrase until restarted
+        FreeAndNil(FServer);
+        if FFamilyPass <> '' then
+          StartFamilyServer;
+      end;
+      SaveFamilyConfig;
+      ShowStatus('Family passphrase set', TONE_GOOD);
+    end;
     ACT_FAMILY_PORT:
+    begin
+      Secs := StrToIntDef(S, 0);
+      if (Secs < 1024) or (Secs > 65535) then
       begin
-        Secs := StrToIntDef(S, 0);
-        if (Secs < 1024) or (Secs > 65535) then
-        begin
-          FPromptError := 'A number from 1024 to 65535';
-          PaintBoxBoard.Invalidate;
-          Exit;
-        end;
-        FFamilyPort := Secs;
-        SaveFamilyConfig;
-        ClosePrompt;
+        FPromptError := 'A number from 1024 to 65535';
+        PaintBoxBoard.Invalidate;
+        Exit;
       end;
-  else
-    ClosePrompt;
+      FFamilyPort := Secs;
+      SaveFamilyConfig;
+      ClosePrompt;
+    end;
+    else
+      ClosePrompt;
   end;
 end;
 
@@ -2330,10 +2323,10 @@ procedure TForm1.DrawPrompt(C: TCanvas);
 const
   PAD = 20;
 var
-  W, H, X, Y, FieldW, TH, CaretX: Integer;
+  W, H, X, Y, FieldW, TH, CaretX: integer;
   R, Field: TRect;
   Disp, Counter: string;
-  Cut: Boolean;
+  Cut: boolean;
 begin
   W := Min(PaintBoxBoard.Width - 24, 460);
   H := 200;
@@ -2397,8 +2390,7 @@ begin
   end;
 
   FPromptOKRect := Rect(X + W - PAD - 96, Y + H - 50, X + W - PAD, Y + H - 14);
-  FPromptCancelRect := Rect(FPromptOKRect.Left - 10 - 96, FPromptOKRect.Top,
-                            FPromptOKRect.Left - 10, FPromptOKRect.Bottom);
+  FPromptCancelRect := Rect(FPromptOKRect.Left - 10 - 96, FPromptOKRect.Top, FPromptOKRect.Left - 10, FPromptOKRect.Bottom);
   RoundBox(C, FPromptCancelRect, 9, CLR_KEY, clNone);
   CenterText(C, FPromptCancelRect, 'Cancel', -14, CLR_TEXT, True);
   RoundBox(C, FPromptOKRect, 9, Shade(CLR_CORRECT, -20), clNone);
@@ -2412,7 +2404,7 @@ end;
 
 { Keyboard and on-screen keys both come through these three, so a prompt,
   a menu or a card on top gets first say whatever the input came from. }
-procedure TForm1.TypeLetter(Ch: Char);
+procedure TForm1.TypeLetter(Ch: char);
 begin
   if FPromptOpen then
   begin
@@ -2482,7 +2474,7 @@ end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: char);
 var
-  Ch: Char;
+  Ch: char;
 begin
   // Ctrl shortcuts are handled in FormKeyDown. Ctrl+M still arrives here as
   // #13 and Ctrl+H as #8, which would otherwise also guess or delete.
@@ -2515,15 +2507,15 @@ begin
 
   case Ch of
     'A'..'Z': TypeLetter(Ch);
-    #13:      PressEnter;
-    #8:       PressBack;
-  else
-    Exit;
+    #13: PressEnter;
+    #8: PressBack;
+    else
+      Exit;
   end;
   Key := #0;
 end;
 
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
   begin
@@ -2570,8 +2562,8 @@ begin
           ShowPoolInfo
         else
           Exit;
-    else
-      Exit;
+      else
+        Exit;
     end;
     Key := 0;
   end;
@@ -2583,15 +2575,14 @@ end;
 
 { A touchscreen that also emulates a mouse would deliver every tap twice -
   once through HandleTouch, once as a click - and type every letter twice. }
-function TForm1.IgnoreMouse: Boolean;
+function TForm1.IgnoreMouse: boolean;
 begin
-  Result := (not FInTouch) and (FLastTouchT <> 0) and
-            (GetTickCount64 - FLastTouchT < TOUCH_MOUSE_GUARD_MS);
+  Result := (not FInTouch) and (FLastTouchT <> 0) and (GetTickCount64 - FLastTouchT < TOUCH_MOUSE_GUARD_MS);
 end;
 
-function TForm1.TouchTargetAt(SX, SY: Integer): TControl;
+function TForm1.TouchTargetAt(SX, SY: integer): TControl;
 
-  function Hit(PB: TPaintBox): Boolean;
+  function Hit(PB: TPaintBox): boolean;
   var
     P: TPoint;
   begin
@@ -2611,7 +2602,7 @@ end;
 
 { Touch arrives here from unittouch and is replayed through the same mouse
   handlers a click uses, so taps, drags and press-and-hold all behave alike. }
-procedure TForm1.HandleTouch(Phase: TTouchPhase; Seq: Pointer; SX, SY: Integer);
+procedure TForm1.HandleTouch(Phase: TTouchPhase; Seq: Pointer; SX, SY: integer);
 var
   P: TPoint;
   Target: TControl;
@@ -2643,44 +2634,44 @@ begin
     if Target = PaintBoxKeys then
       case Phase of
         tpBegin:
-          begin
-            PaintBoxKeysMouseMove(PaintBoxKeys, [], P.X, P.Y);
-            PaintBoxKeysMouseDown(PaintBoxKeys, mbLeft, [], P.X, P.Y);
-          end;
+        begin
+          PaintBoxKeysMouseMove(PaintBoxKeys, [], P.X, P.Y);
+          PaintBoxKeysMouseDown(PaintBoxKeys, mbLeft, [], P.X, P.Y);
+        end;
         tpMove:
           PaintBoxKeysMouseMove(PaintBoxKeys, [], P.X, P.Y);
         tpEnd:
-          begin
-            PaintBoxKeysMouseUp(PaintBoxKeys, mbLeft, [], P.X, P.Y);
-            PaintBoxKeysMouseLeave(PaintBoxKeys);   // a finger leaves no hover behind
-          end;
+        begin
+          PaintBoxKeysMouseUp(PaintBoxKeys, mbLeft, [], P.X, P.Y);
+          PaintBoxKeysMouseLeave(PaintBoxKeys);   // a finger leaves no hover behind
+        end;
         tpCancel:
           PaintBoxKeysMouseLeave(PaintBoxKeys);
       end
     else if Target = PaintBoxBar then
       case Phase of
         tpBegin:
-          begin
-            PaintBoxBarMouseMove(PaintBoxBar, [], P.X, P.Y);
-            PaintBoxBarMouseDown(PaintBoxBar, mbLeft, [], P.X, P.Y);
-          end;
+        begin
+          PaintBoxBarMouseMove(PaintBoxBar, [], P.X, P.Y);
+          PaintBoxBarMouseDown(PaintBoxBar, mbLeft, [], P.X, P.Y);
+        end;
         tpMove:
           PaintBoxBarMouseMove(PaintBoxBar, [], P.X, P.Y);
         tpEnd:
-          begin
-            PaintBoxBarMouseUp(PaintBoxBar, mbLeft, [], P.X, P.Y);
-            PaintBoxBarMouseLeave(PaintBoxBar);
-          end;
+        begin
+          PaintBoxBarMouseUp(PaintBoxBar, mbLeft, [], P.X, P.Y);
+          PaintBoxBarMouseLeave(PaintBoxBar);
+        end;
         tpCancel:
           PaintBoxBarMouseLeave(PaintBoxBar);
       end
     else
       case Phase of
         tpBegin:
-          begin
-            PaintBoxBoardMouseMove(PaintBoxBoard, [], P.X, P.Y);
-            PaintBoxBoardMouseDown(PaintBoxBoard, mbLeft, [], P.X, P.Y);
-          end;
+        begin
+          PaintBoxBoardMouseMove(PaintBoxBoard, [], P.X, P.Y);
+          PaintBoxBoardMouseDown(PaintBoxBoard, mbLeft, [], P.X, P.Y);
+        end;
         tpMove:
           PaintBoxBoardMouseMove(PaintBoxBoard, [], P.X, P.Y);
         tpEnd:
@@ -2697,10 +2688,10 @@ end;
 { Game flow                                                           }
 { ------------------------------------------------------------------ }
 
-procedure TForm1.StartNewGame(WordLength: Integer; const ManualWord: string);
+procedure TForm1.StartNewGame(WordLength: integer; const ManualWord: string);
 var
-  Row, Col: Integer;
-  C: Char;
+  Row, Col: integer;
+  C: char;
 begin
   TimerAnim.Enabled := False;
   CloseCard;
@@ -2771,18 +2762,16 @@ begin
   if not FCustomGame then
     ShowStatus(Format('%d letters, %d tries. Good luck!', [FWordLength, FMaxGuesses]))
   else if FAnyGuess then
-    ShowStatus(Format('Secret word: %d letters, %d tries. Any guess counts!',
-      [FWordLength, FMaxGuesses]))
+    ShowStatus(Format('Secret word: %d letters, %d tries. Any guess counts!', [FWordLength, FMaxGuesses]))
   else
-    ShowStatus(Format('Secret word: %d letters, %d tries. Good luck!',
-      [FWordLength, FMaxGuesses]));
+    ShowStatus(Format('Secret word: %d letters, %d tries. Good luck!', [FWordLength, FMaxGuesses]));
 
   PaintBoxBoard.Invalidate;
   PaintBoxKeys.Invalidate;
   PaintBoxBar.Invalidate;
 end;
 
-procedure TForm1.AddLetter(Letter: Char);
+procedure TForm1.AddLetter(Letter: char);
 begin
   if FPhase <> gpPlaying then
     Exit;
@@ -2848,13 +2837,13 @@ end;
 
 { Standard two-pass Wordle scoring: exact matches first so a repeated letter
   is only marked "present" as many times as it actually occurs. }
-procedure TForm1.EvaluateGuess(Row: Integer; const Guess: string);
+procedure TForm1.EvaluateGuess(Row: integer; const Guess: string);
 var
-  Col: Integer;
-  GuessChar: Char;
-  Remaining: array['A'..'Z'] of Integer;
-  Matched: array of Boolean;
-  C: Char;
+  Col: integer;
+  GuessChar: char;
+  Remaining: array['A'..'Z'] of integer;
+  Matched: array of boolean;
+  C: char;
 begin
   SetLength(Matched, FWordLength);
   for C := 'A' to 'Z' do
@@ -2886,9 +2875,9 @@ begin
     end;
 end;
 
-procedure TForm1.StartReveal(Row: Integer);
+procedure TForm1.StartReveal(Row: integer);
 var
-  Col, Stagger: Integer;
+  Col, Stagger: integer;
   Now0: QWord;
 begin
   FPhase := gpRevealing;
@@ -2909,7 +2898,7 @@ end;
 
 procedure TForm1.FinishReveal;
 var
-  Col: Integer;
+  Col: integer;
 begin
   for Col := 0 to FWordLength - 1 do
   begin
@@ -2940,10 +2929,10 @@ end;
 
 { A key only ever gets better news, never worse: correct beats present
   beats absent. }
-procedure TForm1.ApplyKeyboardStates(Row: Integer);
+procedure TForm1.ApplyKeyboardStates(Row: integer);
 var
-  Col: Integer;
-  C: Char;
+  Col: integer;
+  C: char;
   New: TTileState;
 begin
   for Col := 0 to FWordLength - 1 do
@@ -2964,7 +2953,7 @@ end;
 
 procedure TForm1.WinGame;
 var
-  Col, Stagger: Integer;
+  Col, Stagger: integer;
   Now0: QWord;
 begin
   FPhase := gpWon;
@@ -3003,21 +2992,21 @@ begin
       ShowStatus(Format('You gave up. It was "%s"', [FTargetWord]), TONE_WARN);
     lrTimeUp:
       ShowStatus(Format('⌛ Time''s up! It was "%s"', [FTargetWord]), TONE_WARN);
-  else
-    ShowStatus(Format('💩 Out of tries! It was "%s"', [FTargetWord]), TONE_WARN);
+    else
+      ShowStatus(Format('💩 Out of tries! It was "%s"', [FTargetWord]), TONE_WARN);
   end;
   PaintBoxBar.Invalidate;
   StartAnim;
 end;
 
-procedure TForm1.ShowStatus(const Msg: string; Tone: Integer);
+procedure TForm1.ShowStatus(const Msg: string; Tone: integer);
 begin
   LabelStatus.Caption := Msg;
   case Tone of
     TONE_WARN: LabelStatus.Font.Color := CLR_ACCENT;
     TONE_GOOD: LabelStatus.Font.Color := CLR_CORRECT;
-  else
-    LabelStatus.Font.Color := CLR_TEXT;
+    else
+      LabelStatus.Font.Color := CLR_TEXT;
   end;
 end;
 
@@ -3025,7 +3014,7 @@ end;
 { Hourglass                                                           }
 { ------------------------------------------------------------------ }
 
-procedure TForm1.SetTimerMode(AMode: TTimerMode; ASecs: Integer);
+procedure TForm1.SetTimerMode(AMode: TTimerMode; ASecs: integer);
 begin
   FTimerMode := AMode;
   FTimerSecs := EnsureRange(ASecs, 10, 3600);
@@ -3034,11 +3023,10 @@ begin
     ResetGameClock;
 
   case AMode of
-    tmOff:   ShowStatus('Timer off');
-    tmLevel: ShowStatus(Format('Timer: %s for %d letters',
-               [FormatSecs(LevelSecs(FWordLength)), FWordLength]));
-  else
-    ShowStatus(Format('Timer: %s', [FormatSecs(FTimerSecs)]));
+    tmOff: ShowStatus('Timer off');
+    tmLevel: ShowStatus(Format('Timer: %s for %d letters', [FormatSecs(LevelSecs(FWordLength)), FWordLength]));
+    else
+      ShowStatus(Format('Timer: %s', [FormatSecs(FTimerSecs)]));
   end;
   PaintBoxBar.Invalidate;
 end;
@@ -3048,10 +3036,10 @@ begin
   TimerClock.Enabled := False;
   FLastTickSec := -1;
   case FTimerMode of
-    tmLevel: FTimeTotalMs := Int64(LevelSecs(FWordLength)) * 1000;
-    tmFixed: FTimeTotalMs := Int64(FTimerSecs) * 1000;
-  else
-    FTimeTotalMs := 0;
+    tmLevel: FTimeTotalMs := int64(LevelSecs(FWordLength)) * 1000;
+    tmFixed: FTimeTotalMs := int64(FTimerSecs) * 1000;
+    else
+      FTimeTotalMs := 0;
   end;
   FTimeLeftMs := FTimeTotalMs;
   if FTimeTotalMs > 0 then
@@ -3065,13 +3053,13 @@ end;
 procedure TForm1.TimerClockTimer(Sender: TObject);
 var
   Now0: QWord;
-  Delta: Int64;
-  Sec: Integer;
+  Delta: int64;
+  Sec: integer;
 begin
   ReapSounds(False);
 
   Now0 := GetTickCount64;
-  Delta := Int64(Now0 - FClockLast);
+  Delta := int64(Now0 - FClockLast);
   FClockLast := Now0;
 
   if (FTimeTotalMs <= 0) or (FPhase in [gpWon, gpLost]) then
@@ -3098,7 +3086,7 @@ begin
   end;
 
   // Tick through the last ten seconds.
-  Sec := Integer((FTimeLeftMs + 999) div 1000);
+  Sec := integer((FTimeLeftMs + 999) div 1000);
   if (Sec <= 10) and (Sec <> FLastTickSec) then
   begin
     FLastTickSec := Sec;
@@ -3120,9 +3108,9 @@ begin
   end;
 end;
 
-function TForm1.AnimationPending: Boolean;
+function TForm1.AnimationPending: boolean;
 var
-  Row, Col: Integer;
+  Row, Col: integer;
 begin
   Result := True;
   if (FPhase = gpRevealing) or FRaining or FCardLoading or FToiletOn or FQuakeOn then
@@ -3136,16 +3124,16 @@ begin
   Result := False;
 end;
 
-procedure TForm1.ShakeRow(Row: Integer);
+procedure TForm1.ShakeRow(Row: integer);
 begin
   FShakeRow := Row;
   FShakeT0 := GetTickCount64;
   StartAnim;
 end;
 
-procedure TForm1.FlashKey(Kind: TKeyKind; Ch: Char);
+procedure TForm1.FlashKey(Kind: TKeyKind; Ch: char);
 var
-  Idx: Integer;
+  Idx: integer;
 begin
   if Length(FKeys) = 0 then
     LayoutKeys;
@@ -3161,10 +3149,9 @@ end;
 
 { Returns the new particle's index so callers can turn it into another kind,
   or -1 when the screen is already busy enough. }
-function TForm1.AddParticle(AX, AY, AVX, AVY, AGrav, ALife: Double;
-  ASize: Integer; const AGlyph: string): Integer;
+function TForm1.AddParticle(AX, AY, AVX, AVY, AGrav, ALife: double; ASize: integer; const AGlyph: string): integer;
 var
-  N: Integer;
+  N: integer;
 begin
   Result := -1;
   N := Length(FParticles);
@@ -3185,9 +3172,9 @@ begin
   Result := N;
 end;
 
-procedure TForm1.SpawnConfetti(Row: Integer);
+procedure TForm1.SpawnConfetti(Row: integer);
 var
-  I, Col: Integer;
+  I, Col: integer;
   R: TRect;
 begin
   for I := 0 to 43 do
@@ -3202,7 +3189,7 @@ end;
 
 procedure TForm1.SpawnPoopStorm;
 var
-  I: Integer;
+  I: integer;
 begin
   FRainSeed := 0;
   FRaining := True;
@@ -3231,11 +3218,10 @@ end;
 
 procedure TForm1.SpawnComicWord;
 var
-  N: Integer;
+  N: integer;
 begin
-  N := AddParticle(16 + Random(Max(1, PaintBoxBoard.Width - 170)),
-    16 + Random(Max(1, PaintBoxBoard.Height div 2)),
-    0, 0, 0, 0.9, 16, COMIC_WORDS[Random(Length(COMIC_WORDS))]);
+  N := AddParticle(16 + Random(Max(1, PaintBoxBoard.Width - 170)), 16 + Random(Max(1, PaintBoxBoard.Height div 2)), 0, 0, 0, 0.9,
+    16, COMIC_WORDS[Random(Length(COMIC_WORDS))]);
   if N < 0 then
     Exit;
   FParticles[N].Kind := ptText;
@@ -3245,9 +3231,9 @@ end;
 
 procedure TForm1.UpdateParticles;
 var
-  I, Kept: Integer;
+  I, Kept: integer;
   P: TParticle;
-  Floor: Double;
+  Floor: double;
 begin
   Kept := 0;
   for I := 0 to High(FParticles) do
@@ -3255,34 +3241,34 @@ begin
     P := FParticles[I];
     case P.Kind of
       ptVortex:
-        begin
-          // Round and round the bowl, tighter every frame, until it goes down.
-          P.Ang := P.Ang + P.AngVel;
-          P.Rad := P.Rad * 0.962;
-          P.X := P.CX + Cos(P.Ang) * P.Rad - P.Size / 2;
-          P.Y := P.CY + Sin(P.Ang) * P.Rad * 0.45 - P.Size / 2;
-          if P.Rad < 6 then
-            P.Life := 0;
-        end;
-      ptText:
-        begin
-          P.Size := P.Size + P.Grow;
-          P.Y := P.Y - 0.4;
-        end;
-    else
-      P.X := P.X + P.VX;
-      P.Y := P.Y + P.VY;
-      P.VY := P.VY + P.Grav;
-      if P.Kind = ptBounce then
       begin
-        Floor := PaintBoxBoard.Height - P.Size - 2;
-        if (P.Y > Floor) and (P.VY > 0) then
-        begin
-          P.Y := Floor;
-          P.VY := -P.VY * 0.6;
-          P.VX := P.VX * 0.85;
-        end;
+        // Round and round the bowl, tighter every frame, until it goes down.
+        P.Ang := P.Ang + P.AngVel;
+        P.Rad := P.Rad * 0.962;
+        P.X := P.CX + Cos(P.Ang) * P.Rad - P.Size / 2;
+        P.Y := P.CY + Sin(P.Ang) * P.Rad * 0.45 - P.Size / 2;
+        if P.Rad < 6 then
+          P.Life := 0;
       end;
+      ptText:
+      begin
+        P.Size := P.Size + P.Grow;
+        P.Y := P.Y - 0.4;
+      end;
+      else
+        P.X := P.X + P.VX;
+        P.Y := P.Y + P.VY;
+        P.VY := P.VY + P.Grav;
+        if P.Kind = ptBounce then
+        begin
+          Floor := PaintBoxBoard.Height - P.Size - 2;
+          if (P.Y > Floor) and (P.VY > 0) then
+          begin
+            P.Y := Floor;
+            P.VY := -P.VY * 0.6;
+            P.VX := P.VX * 0.85;
+          end;
+        end;
     end;
 
     P.Life := P.Life - FRAME_MS / 1000;
@@ -3298,9 +3284,9 @@ end;
 { The potty-word show: a fart, the board shakes, poop fountains out of the
   row and bounces around, a giant toilet rises, swallows a whirlpool of poop
   and toilet paper with a flush, and blasts off out of the top. }
-procedure TForm1.StartPoopShow(Row: Integer);
+procedure TForm1.StartPoopShow(Row: integer);
 var
-  I, Col, N: Integer;
+  I, Col, N: integer;
   R: TRect;
 begin
   PlayRandom(FART_SOUNDS);
@@ -3315,9 +3301,8 @@ begin
   begin
     Col := Random(FWordLength);
     R := TileRect(Row, Col);
-    N := AddParticle((R.Left + R.Right) / 2, (R.Top + R.Bottom) / 2,
-      (Random - 0.5) * 9, -(3 + Random * 8), 0.35,
-      2.6 + Random, 18 + Random(18), POOP_GLYPHS[Random(Length(POOP_GLYPHS))]);
+    N := AddParticle((R.Left + R.Right) / 2, (R.Top + R.Bottom) / 2, (Random - 0.5) * 9, -(3 + Random * 8), 0.35, 2.6 + Random,
+      18 + Random(18), POOP_GLYPHS[Random(Length(POOP_GLYPHS))]);
     if N >= 0 then
       FParticles[N].Kind := ptBounce;
   end;
@@ -3328,11 +3313,11 @@ end;
 
 procedure TForm1.UpdateToilet(Now0: QWord);
 var
-  El: Int64;
-  X, Y, Size: Double;
-  N: Integer;
+  El: int64;
+  X, Y, Size: double;
+  N: integer;
 begin
-  El := Int64(Now0 - FToiletT0);
+  El := int64(Now0 - FToiletT0);
   if El >= TOILET_MS then
   begin
     FToiletOn := False;
@@ -3350,8 +3335,7 @@ begin
   // The whirlpool.
   if (El >= 350) and (El < 1850) and (FToiletFrame mod 3 = 0) then
   begin
-    N := AddParticle(X, Y, 0, 0, 0, 3, 16 + Random(16),
-      VORTEX_GLYPHS[Random(Length(VORTEX_GLYPHS))]);
+    N := AddParticle(X, Y, 0, 0, 0, 3, 16 + Random(16), VORTEX_GLYPHS[Random(Length(VORTEX_GLYPHS))]);
     if N >= 0 then
     begin
       FParticles[N].Kind := ptVortex;
@@ -3374,7 +3358,7 @@ end;
 
 procedure TForm1.MaybeEasterEgg(const Guess: string);
 var
-  I: Integer;
+  I: integer;
 begin
   for I := 0 to High(POOP_WORDS) do
     if Guess = POOP_WORDS[I] then
@@ -3386,10 +3370,10 @@ end;
 
 procedure TForm1.TimerAnimTimer(Sender: TObject);
 var
-  Row, Col: Integer;
+  Row, Col: integer;
   Now0: QWord;
-  P: Double;
-  El: Int64;
+  P: double;
+  El: int64;
 begin
   Now0 := GetTickCount64;
 
@@ -3425,7 +3409,7 @@ begin
 
   if FQuakeOn then
   begin
-    El := Int64(Now0 - FQuakeT0);
+    El := int64(Now0 - FQuakeT0);
     if El >= QUAKE_MS then
     begin
       FQuakeOn := False;
@@ -3477,7 +3461,7 @@ end;
   re-checking sixteen fresh files on every start. Any failure leaves
   FSoundDir pointing at the folder beside the executable instead. }
 { Size of a file on disk, -1 when there is none. }
-function SizeOnDisk(const Path: string): Int64;
+function SizeOnDisk(const Path: string): int64;
 var
   SR: TSearchRec;
 begin
@@ -3491,7 +3475,7 @@ end;
 
 procedure TForm1.ExtractSounds;
 var
-  I: Integer;
+  I: integer;
   R: TResourceStream;
   Dir, Dest, ResName: string;
 begin
@@ -3522,10 +3506,10 @@ begin
   ExtractSounds;
 end;
 
-procedure TForm1.ReapSounds(All: Boolean);
+procedure TForm1.ReapSounds(All: boolean);
 {$IFNDEF WINDOWS}
 var
-  I: Integer;
+  I: integer;
   P: TProcess;
 {$ENDIF}
 begin
@@ -3627,17 +3611,10 @@ var
   R: TDefResult;
 begin
   R := Default(TDefResult);
-  AddInfo(R, 'the colors', [
-    'GREEN - right letter in the right spot',
-    'YELLOW - right letter, wrong spot',
-    'GRAY - that letter is not in the word']);
-  AddInfo(R, 'playing', [
-    'Type, or tap the keys on screen. ENTER guesses and ⌫ deletes.',
-    'Hold a finger on a row (or right-click it) to look up its word.',
+  AddInfo(R, 'the colors', ['GREEN - right letter in the right spot', 'YELLOW - right letter, wrong spot', 'GRAY - that letter is not in the word']);
+  AddInfo(R, 'playing', ['Type, or tap the keys on screen. ENTER guesses and ⌫ deletes.', 'Hold a finger on a row (or right-click it) to look up its word.',
     'The ☰ button has your own secret words, sounds and more.']);
-  AddInfo(R, 'shortcuts', [
-    'Ctrl+N new game  ·  Ctrl+M your own word',
-    'Ctrl+L look up a word  ·  F1 this help']);
+  AddInfo(R, 'shortcuts', ['Ctrl+N new game  ·  Ctrl+M your own word', 'Ctrl+L look up a word  ·  F1 this help']);
   ShowInfoCard('HOW TO PLAY', R);
 end;
 
@@ -3683,7 +3660,7 @@ end;
 { True when the server is up and actually bound to its port. Binding fails
   within moments (port taken, no permission), so a short wait is enough to
   tell a running server from a lying one. }
-function TForm1.StartFamilyServer: Boolean;
+function TForm1.StartFamilyServer: boolean;
 begin
   FServer := TWordzelServer.Create(FFamilyPort, FFamilyPass);
   Sleep(400);
@@ -3713,7 +3690,7 @@ begin
   SaveFamilyConfig;
 end;
 
-procedure TForm1.FamilyAfterGame(AWon: Boolean);
+procedure TForm1.FamilyAfterGame(AWon: boolean);
 begin
   if FPlayerName = '' then
     Exit;
@@ -3727,7 +3704,7 @@ var
   R: TDefResult;
   D, M: TStringList;
   A: array of string;
-  I: Integer;
+  I: integer;
 begin
   R := Default(TDefResult);
   D := TStringList.Create;
@@ -3754,13 +3731,9 @@ var
   R: TDefResult;
 begin
   R := Default(TDefResult);
-  AddInfo(R, 'the name', [
-    'Wordle + Hazel = WORDZEL.',
-    'Made for Hazel, who discovered that the best thing to guess',
+  AddInfo(R, 'the name', ['Wordle + Hazel = WORDZEL.', 'Made for Hazel, who discovered that the best thing to guess',
     'in Wordle is FARTS, and the second best is POOPS.']);
-  AddInfo(R, 'credits', [
-    'Chief game tester and potty word researcher: Hazel',
-    'Built with Lazarus and Free Pascal.']);
+  AddInfo(R, 'credits', ['Chief game tester and potty word researcher: Hazel', 'Built with Lazarus and Free Pascal.']);
   ShowInfoCard('ABOUT WORDZEL', R);
 end;
 
@@ -3768,14 +3741,13 @@ procedure TForm1.ShowPoolInfo;
 var
   R: TDefResult;
   Pools, Sample: array of string;
-  L, I, J: Integer;
+  L, I, J: integer;
   Line: string;
 begin
   R := Default(TDefResult);
   SetLength(Pools, MAX_WORD_LEN - MIN_WORD_LEN + 1);
   for L := MIN_WORD_LEN to MAX_WORD_LEN do
-    Pools[L - MIN_WORD_LEN] := Format('%d letters: %d eligible (top %d everyday words)',
-      [L, PoolSize(L), PoolThreshold(L)]);
+    Pools[L - MIN_WORD_LEN] := Format('%d letters: %d eligible (top %d everyday words)', [L, PoolSize(L), PoolThreshold(L)]);
   AddInfo(R, 'word pools', Pools);
 
   SetLength(Sample, 4);
@@ -3800,9 +3772,9 @@ end;
 { Whatever letters are sitting in a row: the submitted guess, or for the row
   still being typed, the letters entered so far. Kids want to check a word
   before spending a turn on it. }
-function TForm1.WordInRow(Row: Integer): string;
+function TForm1.WordInRow(Row: integer): string;
 var
-  Col: Integer;
+  Col: integer;
 begin
   Result := '';
   if (Row < 0) or (Row >= FMaxGuesses) or (Length(FTiles) = 0) then
@@ -3831,7 +3803,7 @@ begin
 
   FCardWord := UpperCase(Trim(AWord));
   FCardResult := Default(TDefResult);
-  FCardResult.Word := FCardWord;
+  FCardResult.word := FCardWord;
   FCardLoading := True;
   FCardNumbered := True;
   FCardVisible := True;
@@ -3883,17 +3855,16 @@ end;
 
 { Greedy word wrap measured against the real canvas, so it fits the card
   rather than guessing at a character count. }
-procedure TForm1.WrapInto(C: TCanvas; const S: string; MaxWidth: Integer;
-  Kind: TCardLineKind; Indent, ContIndent: Integer);
+procedure TForm1.WrapInto(C: TCanvas; const S: string; MaxWidth: integer; Kind: TCardLineKind; Indent, ContIndent: integer);
 var
   Words: TStringList;
   Line, Candidate: string;
-  I: Integer;
-  First: Boolean;
+  I: integer;
+  First: boolean;
 
   procedure Emit(const T: string);
   var
-    N: Integer;
+    N: integer;
   begin
     if T = '' then
       Exit;
@@ -3946,14 +3917,14 @@ end;
 
 { Turns the fetched result into styled lines. Fonts are set before measuring
   so the wrap matches what actually gets drawn. }
-procedure TForm1.BuildCardLines(C: TCanvas; TextWidth: Integer);
+procedure TForm1.BuildCardLines(C: TCanvas; TextWidth: integer);
 var
-  I, J: Integer;
+  I, J: integer;
   Dots: string;
 
-  procedure Plain(const S: string; Kind: TCardLineKind; Indent: Integer = 0);
+  procedure Plain(const S: string; Kind: TCardLineKind; Indent: integer = 0);
   var
-    N: Integer;
+    N: integer;
   begin
     N := Length(FCardLines);
     SetLength(FCardLines, N + 1);
@@ -3995,10 +3966,10 @@ begin
       C.Font.Style := [];
       if FCardNumbered then
         WrapInto(C, IntToStr(J + 1) + '.  ' + FCardResult.Entries[I].Senses[J],
-                 TextWidth - 16, clkSense, 16, 16 + C.TextWidth('1.  '))
+          TextWidth - 16, clkSense, 16, 16 + C.TextWidth('1.  '))
       else
         WrapInto(C, FCardResult.Entries[I].Senses[J],
-                 TextWidth - 16, clkSense, 16, 16);
+          TextWidth - 16, clkSense, 16, 16);
     end;
   end;
 end;
@@ -4008,7 +3979,7 @@ const
   PAD = 20;
   TITLE_H = 40;
 var
-  CardW, CardX, TextW, LineH, Y, I, ContentH, MaxCardH, CardH: Integer;
+  CardW, CardX, TextW, LineH, Y, I, ContentH, MaxCardH, CardH: integer;
   R, Line: TRect;
   Col: TColor;
 begin
@@ -4024,8 +3995,7 @@ begin
   MaxCardH := PaintBoxBoard.Height - 16;
   CardH := Min(ContentH, MaxCardH);
 
-  R := Rect(CardX, (PaintBoxBoard.Height - CardH) div 2,
-            CardX + CardW, (PaintBoxBoard.Height + CardH) div 2);
+  R := Rect(CardX, (PaintBoxBoard.Height - CardH) div 2, CardX + CardW, (PaintBoxBoard.Height + CardH) div 2);
   RoundBox(C, Rect(R.Left + 4, R.Top + 5, R.Right + 4, R.Bottom + 5), 16, CLR_SHADOW, clNone);
   RoundBox(C, R, 16, CLR_PANEL, CLR_TILE_EDGE_HI);
 
@@ -4054,27 +4024,27 @@ begin
 
     case FCardLines[I].Kind of
       clkPhonetic:
-        begin
-          C.Font.Height := -14;
-          C.Font.Style := [fsItalic];
-          Col := CLR_DIM;
-        end;
+      begin
+        C.Font.Height := -14;
+        C.Font.Style := [fsItalic];
+        Col := CLR_DIM;
+      end;
       clkPart:
-        begin
-          C.Font.Height := -15;
-          C.Font.Style := [fsBold];
-          Col := CLR_PRESENT;        // gold, matches a "present letter" tile
-        end;
+      begin
+        C.Font.Height := -15;
+        C.Font.Style := [fsBold];
+        Col := CLR_PRESENT;        // gold, matches a "present letter" tile
+      end;
       clkError:
-        begin
-          C.Font.Height := -15;
-          C.Font.Style := [];
-          Col := CLR_ACCENT;
-        end;
-    else
-      C.Font.Height := -15;
-      C.Font.Style := [];
-      Col := CLR_TEXT;
+      begin
+        C.Font.Height := -15;
+        C.Font.Style := [];
+        Col := CLR_ACCENT;
+      end;
+      else
+        C.Font.Height := -15;
+        C.Font.Style := [];
+        Col := CLR_TEXT;
     end;
 
     if FCardLines[I].Text <> '' then
@@ -4090,8 +4060,7 @@ begin
   // Footer
   Line := Rect(R.Left, R.Bottom - PAD - 16, R.Right, R.Bottom - PAD + 2);
   if FCardResult.Source <> '' then
-    CenterText(C, Line, FCardResult.Source + '  ·  tap or press ESC to close',
-      -11, CLR_DIM, False)
+    CenterText(C, Line, FCardResult.Source + '  ·  tap or press ESC to close', -11, CLR_DIM, False)
   else
     CenterText(C, Line, 'tap or press ESC to close', -11, CLR_DIM, False);
 end;

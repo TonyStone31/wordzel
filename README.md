@@ -57,17 +57,35 @@ leaderboard:
 2. On any phone, tablet or computer at home, open
    `http://<that computer's address>:<port>` - for example
    `http://192.168.1.10:8181`.
-3. Type the family passphrase, then pick your name or add a new one with a
-   PIN.
+3. Type the family passphrase, then pick your name from the list or add a
+   new one. Each device remembers both; tap your name at the top to hand
+   the device to someone else.
 
 Every finished game counts toward the daily and monthly leaderboard: a win
 scores more the longer the word and the fewer the guesses, and a loss still
 scores a point, so playing a lot pays off. Keep the server on your own home
 network.
 
+### A server that stays on
+
+`wordzel-server` is the same family server with no window, for a machine
+that is always running. Build `wordzel-server.lpi` (after `wordzel.lpi`, which
+makes the resource file both share), then give it a folder holding a
+`wordzel.ini`:
+
+    [family]
+    passphrase=pick something long
+    port=8080
+
+and start it with `wordzel-server --config=/path/to/that/folder`. Scores
+are kept in `family/` beside the ini. Without `--config` it uses the game's
+own settings. It has no TLS of its own, so put a proxy that adds HTTPS in
+front of it before letting the internet in.
+
 ## Building it yourself
 
 Open `wordzel.lpi` in [Lazarus](https://www.lazarus-ide.org) and press F9.
+The headless server is `wordzel-server.lpi`.
 
 ## Credits
 

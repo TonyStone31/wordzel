@@ -38,7 +38,7 @@ body {
   cursor: pointer;
 }
 #topbar button:active { background: var(--key-alt); }
-#whoami { margin-left: auto; color: var(--dim); font-weight: 700; }
+#whoami { margin-left: auto; color: var(--dim); font-weight: 700; cursor: pointer; }
 
 .menu {
   position: absolute; top: 48px; left: 10px; z-index: 40;
@@ -120,7 +120,7 @@ body {
 .pane h2 { font-size: 13px; text-transform: uppercase; color: var(--dim);
            margin: 14px 0 6px; }
 .pane p { color: var(--dim); margin-bottom: 10px; }
-.pane input {
+.pane input, .pane select {
   width: 100%; margin: 6px 0; padding: 12px;
   background: var(--tile); border: 2px solid var(--edge); border-radius: 8px;
   color: var(--text); font: inherit; font-weight: 600;
@@ -132,12 +132,6 @@ body {
   border-radius: 8px; font: inherit; font-weight: 800; cursor: pointer;
 }
 .err { color: var(--accent); min-height: 20px; font-weight: 600; margin-top: 4px; }
-#names { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
-#names button {
-  background: var(--key); color: var(--text); border: 0; border-radius: 8px;
-  padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer;
-}
-#names button.picked { background: var(--correct); }
 table { width: 100%; border-collapse: collapse; }
 td { padding: 6px 4px; border-bottom: 1px solid var(--edge); }
 td:nth-child(2) { text-align: right; font-weight: 800; color: var(--accent); }

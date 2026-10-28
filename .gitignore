@@ -4,6 +4,7 @@
 # build output
 lib/
 wordzel
+wordzel-server
 *.lps
 *.compiled
 *.o

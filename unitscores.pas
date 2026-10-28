@@ -26,9 +26,9 @@ function ScorePoints(Len, MaxG, Used: Integer; Won: Boolean): Integer;
 { Letters and digits only, up to 12 of them. '' means unusable. }
 function SanitizeName(const S: string): string;
 
-{ True when the name+PIN pair is good. An unknown name is created on the
-  spot (that is how you join); a known name must bring its own PIN. }
-function TryLogin(const AName, APin: string; out Err: string): Boolean;
+{ True when the name is usable. An unknown name is created on the spot
+  (that is how you join); the family passphrase is the only lock. }
+function TryLogin(const AName: string; out Err: string): Boolean;
 
 procedure AddScore(const AName: string; Len, MaxG, Used: Integer; Won: Boolean);
 
@@ -44,13 +44,9 @@ procedure BoardLines(Day, Month: TStrings);
 implementation
 
 uses
-  SysUtils, DateUtils, syncobjs, md5, fpjson;
+  SysUtils, DateUtils, syncobjs, fpjson;
 
 type
-  TPlayer = record
-    Name: string;
-    PinHash: string;
-  end;
 
   TGame = record
     When: TDateTime;
@@ -62,7 +58,7 @@ type
 var
   Lock: TCriticalSection;
   Dir: string = '';
-  Players: array of TPlayer;
+  Players: array of string;
   Games: array of TGame;
 
 function ScorePoints(Len, MaxG, Used: Integer; Won: Boolean): Integer;
@@ -89,17 +85,12 @@ begin
     end;
 end;
 
-function PinHash(const AName, APin: string): string;
-begin
-  Result := MD5Print(MD5String('wzpin:' + UpperCase(AName) + ':' + APin));
-end;
-
 function FindPlayer(const AName: string): Integer;
 var
   I: Integer;
 begin
   for I := 0 to High(Players) do
-    if SameText(Players[I].Name, AName) then
+    if SameText(Players[I], AName) then
       Exit(I);
   Result := -1;
 end;
@@ -118,7 +109,7 @@ begin
   L := TStringList.Create;
   try
     for I := 0 to High(Players) do
-      L.Add(Players[I].Name + ',' + Players[I].PinHash);
+      L.Add(Players[I]);
     L.SaveToFile(Dir + 'players.csv');
   finally
     L.Free;
@@ -164,13 +155,13 @@ begin
       L.LoadFromFile(Dir + 'players.csv');
       for I := 0 to L.Count - 1 do
       begin
+        { older files carry a PIN hash after the name; it is ignored }
         P.DelimitedText := L[I];
-        if P.Count >= 2 then
+        if (P.Count >= 1) and (SanitizeName(P[0]) <> '') then
         begin
           N := Length(Players);
           SetLength(Players, N + 1);
-          Players[N].Name := P[0];
-          Players[N].PinHash := P[1];
+          Players[N] := SanitizeName(P[0]);
         end;
       end;
     end;
@@ -236,10 +227,10 @@ end;
 { Players and games                                                   }
 { ------------------------------------------------------------------ }
 
-function TryLogin(const AName, APin: string; out Err: string): Boolean;
+function TryLogin(const AName: string; out Err: string): Boolean;
 var
   Name: string;
-  I, N: Integer;
+  N: Integer;
 begin
   Result := False;
   Err := '';
@@ -249,34 +240,16 @@ begin
     Err := 'Names are letters and numbers, up to 12.';
     Exit;
   end;
-  if (Length(APin) < 3) or (Length(APin) > 6) then
-  begin
-    Err := 'PINs are 3 to 6 digits.';
-    Exit;
-  end;
-  for I := 1 to Length(APin) do
-    if not (APin[I] in ['0'..'9']) then
-    begin
-      Err := 'PINs are 3 to 6 digits.';
-      Exit;
-    end;
-
   Lock.Acquire;
   try
-    I := FindPlayer(Name);
-    if I < 0 then
+    if FindPlayer(Name) < 0 then
     begin
       N := Length(Players);
       SetLength(Players, N + 1);
-      Players[N].Name := Name;
-      Players[N].PinHash := PinHash(Name, APin);
+      Players[N] := Name;
       SavePlayers;
-      Result := True;
-    end
-    else if Players[I].PinHash = PinHash(Name, APin) then
-      Result := True
-    else
-      Err := 'Wrong PIN for ' + Players[I].Name + '.';
+    end;
+    Result := True;
   finally
     Lock.Release;
   end;
@@ -322,7 +295,7 @@ begin
     A := TJSONArray.Create;
     try
       for I := 0 to High(Players) do
-        A.Add(Players[I].Name);
+        A.Add(Players[I]);
       Result := A.AsJSON;
     finally
       A.Free;

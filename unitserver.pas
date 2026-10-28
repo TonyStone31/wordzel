@@ -6,7 +6,7 @@ unit unitserver;
 
   One shared family passphrase is the door: POST /api/join trades it for a
   cookie, and everything but the login page's own files wants that cookie.
-  Players then pick a name and a low-security PIN - see unitscores.
+  Players then pick their name from the family's list, or add one.
 
   There is no TLS in this process. Keep it on the LAN, or put a proxy that
   terminates TLS in front of it. }
@@ -220,8 +220,7 @@ begin
 
   if Path = '/api/login' then
   begin
-    if TryLogin(ARequest.ContentFields.Values['name'],
-                ARequest.ContentFields.Values['pin'], Err) then
+    if TryLogin(ARequest.ContentFields.Values['name'], Err) then
     begin
       Who := SanitizeName(ARequest.ContentFields.Values['name']);
       SetCookie(AResponse, 'who', Who);

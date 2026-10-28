@@ -88,31 +88,36 @@ $('joinGo').onclick = async () => {
 };
 $('joinPass').onkeydown = e => { if (e.key === 'Enter') $('joinGo').click(); };
 
+// the empty value is "someone new", which opens the name box
 function showLogin(players) {
   showPane('login');
-  const n = $('names');
-  n.innerHTML = '';
-  (players || []).forEach(p => {
-    const b = document.createElement('button');
-    b.textContent = p;
-    b.onclick = () => {
-      [...n.children].forEach(c => c.classList.remove('picked'));
-      b.classList.add('picked');
-      $('loginName').value = p;
-      $('loginPin').focus();
-    };
-    n.appendChild(b);
-  });
+  const sel = $('loginName');
+  sel.innerHTML = '';
+  [...players, ''].forEach(p => sel.add(new Option(p || 'Someone new...', p)));
+  sel.value = players.includes(me) ? me : (players[0] || '');
+  sel.onchange();
 }
+
+$('loginName').onchange = () => {
+  const isNew = $('loginName').value === '';
+  $('loginNew').classList.toggle('hidden', !isNew);
+  if (isNew) $('loginNew').focus();
+};
 
 $('loginGo').onclick = async () => {
   const r = await api('/api/login',
-    { name: $('loginName').value, pin: $('loginPin').value });
+    { name: $('loginName').value || $('loginNew').value });
   if (!r.ok) { $('loginErr').textContent = r.error; return; }
   me = r.name;
   startPlaying();
 };
-$('loginPin').onkeydown = e => { if (e.key === 'Enter') $('loginGo').click(); };
+$('loginNew').onkeydown = e => { if (e.key === 'Enter') $('loginGo').click(); };
+
+// a shared tablet: tap the name to hand it to someone else
+$('whoami').onclick = async () => {
+  const r = await api('/api/players');
+  if (r.ok) showLogin(r.players);
+};
 
 function startPlaying() {
   $('whoami').textContent = me;
